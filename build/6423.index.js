@@ -1,0 +1,20 @@
+/*!
+ * 
+ *   @hodgef/js-library-boilerplate-basic v1.6.164
+ *   https://github.com/hodgef/js-library-boilerplate-basic
+ *
+ *   Copyright (c) Francisco Hodge (https://github.com/hodgef) and project contributors.
+ *
+ *   This source code is licensed under the MIT license found in the
+ *   LICENSE file in the root directory of this source tree.
+ *
+ */
+"use strict";(self.webpackChunkMyLibrary=self.webpackChunkMyLibrary||[]).push([[6423],{6423:(e,i,t)=>{t.r(i),t.d(i,{conf:()=>n,language:()=>s});
+/*!-----------------------------------------------------------------------------
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Version: 0.36.1(6c56744c3419458f0dd48864520b759d1a3a1ca8)
+ * Released under the MIT license
+ * https://github.com/microsoft/monaco-editor/blob/main/LICENSE.txt
+ *-----------------------------------------------------------------------------*/
+var n={comments:{lineComment:"//",blockComment:["/*","*/"]},brackets:[["{","}"],["[","]"],["(",")"]],autoClosingPairs:[{open:"{",close:"}"},{open:"[",close:"]"},{open:"(",close:")"},{open:'"',close:'"'},{open:"'",close:"'"},{open:"`",close:"`"}],surroundingPairs:[{open:"{",close:"}"},{open:"[",close:"]"},{open:"(",close:")"},{open:'"',close:'"'},{open:"'",close:"'"},{open:"`",close:"`"}]},s={defaultToken:"",tokenPostfix:".cypher",ignoreCase:!0,brackets:[{open:"{",close:"}",token:"delimiter.curly"},{open:"[",close:"]",token:"delimiter.bracket"},{open:"(",close:")",token:"delimiter.parenthesis"}],keywords:["ALL","AND","AS","ASC","ASCENDING","BY","CALL","CASE","CONTAINS","CREATE","DELETE","DESC","DESCENDING","DETACH","DISTINCT","ELSE","END","ENDS","EXISTS","IN","IS","LIMIT","MANDATORY","MATCH","MERGE","NOT","ON","ON","OPTIONAL","OR","ORDER","REMOVE","RETURN","SET","SKIP","STARTS","THEN","UNION","UNWIND","WHEN","WHERE","WITH","XOR","YIELD"],builtinLiterals:["true","TRUE","false","FALSE","null","NULL"],builtinFunctions:["abs","acos","asin","atan","atan2","avg","ceil","coalesce","collect","cos","cot","count","degrees","e","endNode","exists","exp","floor","head","id","keys","labels","last","left","length","log","log10","lTrim","max","min","nodes","percentileCont","percentileDisc","pi","properties","radians","rand","range","relationships","replace","reverse","right","round","rTrim","sign","sin","size","split","sqrt","startNode","stDev","stDevP","substring","sum","tail","tan","timestamp","toBoolean","toFloat","toInteger","toLower","toString","toUpper","trim","type"],operators:["+","-","*","/","%","^","=","<>","<",">","<=",">=","->","<-","--\x3e","<--"],escapes:/\\(?:[tbnrf\\"'`]|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,digits:/\d+/,octaldigits:/[0-7]+/,hexdigits:/[0-9a-fA-F]+/,tokenizer:{root:[[/[{}[\]()]/,"@brackets"],{include:"common"}],common:[{include:"@whitespace"},{include:"@numbers"},{include:"@strings"},[/:[a-zA-Z_][\w]*/,"type.identifier"],[/[a-zA-Z_][\w]*(?=\()/,{cases:{"@builtinFunctions":"predefined.function"}}],[/[a-zA-Z_$][\w$]*/,{cases:{"@keywords":"keyword","@builtinLiterals":"predefined.literal","@default":"identifier"}}],[/`/,"identifier.escape","@identifierBacktick"],[/[;,.:|]/,"delimiter"],[/[<>=%+\-*/^]+/,{cases:{"@operators":"delimiter","@default":""}}]],numbers:[[/-?(@digits)[eE](-?(@digits))?/,"number.float"],[/-?(@digits)?\.(@digits)([eE]-?(@digits))?/,"number.float"],[/-?0x(@hexdigits)/,"number.hex"],[/-?0(@octaldigits)/,"number.octal"],[/-?(@digits)/,"number"]],strings:[[/"([^"\\]|\\.)*$/,"string.invalid"],[/'([^'\\]|\\.)*$/,"string.invalid"],[/"/,"string","@stringDouble"],[/'/,"string","@stringSingle"]],whitespace:[[/[ \t\r\n]+/,"white"],[/\/\*/,"comment","@comment"],[/\/\/.*$/,"comment"]],comment:[[/\/\/.*/,"comment"],[/[^/*]+/,"comment"],[/\*\//,"comment","@pop"],[/[/*]/,"comment"]],stringDouble:[[/[^\\"]+/,"string"],[/@escapes/,"string"],[/\\./,"string.invalid"],[/"/,"string","@pop"]],stringSingle:[[/[^\\']+/,"string"],[/@escapes/,"string"],[/\\./,"string.invalid"],[/'/,"string","@pop"]],identifierBacktick:[[/[^\\`]+/,"identifier.escape"],[/@escapes/,"identifier.escape"],[/\\./,"identifier.escape.invalid"],[/`/,"identifier.escape","@pop"]]}}}}]);
+//# sourceMappingURL=6423.index.js.map
