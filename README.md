@@ -1,69 +1,139 @@
- <div align="center">
- <img align="center" width="230" src="https://i.imgur.com/pGGFGpi.png" />
-  <h2>Javascript Library Boilerplate Basic</h2>
-  <blockquote>Minimal Library Starter Kit for your Javascript projects</blockquote>
- 
- <a href="https://www.npmjs.com/package/@hodgef/js-library-boilerplate-basic"><img src="https://badgen.net/npm/v/@hodgef/js-library-boilerplate-basic?color=blue" alt="npm version"></a> <a href="https://github.com/hodgef/js-library-boilerplate-basic"><img src="https://img.shields.io/github/last-commit/hodgef/js-library-boilerplate-basic" alt="lastest commit"></a> <a href="https://github.com/hodgef/js-library-boilerplate-basic/actions"><img alt="Build Status" src="https://github.com/hodgef/js-library-boilerplate-basic/workflows/Build/badge.svg?color=green" /></a> <a href="https://github.com/hodgef/js-library-boilerplate-basic/actions"> <img alt="Publish Status" src="https://github.com/hodgef/js-library-boilerplate-basic/workflows/Publish/badge.svg?color=green" /></a>
- 
-<strong>If you like TypeScript, check out [ts-library-boilerplate-basic](https://github.com/hodgef/ts-library-boilerplate-basic).</strong><br />
-<strong>Want a more robust (yet bulkier) alternative? Check out [js-library-boilerplate](https://github.com/hodgef/js-library-boilerplate).</strong><br />
-</div>
+# Atlas Monaco Editor
+The library integrates Atlas HCL with Monaco Editor.
 
-## ⭐️ Features
+## Features
+### Code Completion
 
-- Webpack 5
-- Babel 7
-- Hot reloading (`npm start`)
-- UMD exports, so your library works everywhere.
-- Jest unit testing
-- Customizable file headers for your build [(Example 1)](https://github.com/hodgef/js-library-boilerplate-basic/blob/master/build/index.js) [(Example2)](https://github.com/hodgef/js-library-boilerplate-basic/blob/master/build/css/index.css)
-- Daily [dependabot](https://dependabot.com) dependency updates
+Library provides robust code completion support for all SQL resources available within Atlas. For a comprehensive list of the supported resources, please visit the following link: https://atlasgo.io/atlas-schema/sql-resources.
 
-## 📦 Getting Started
+![Code Completion Demo](assets/code_completion.gif)
 
-```
-git clone https://github.com/hodgef/js-library-boilerplate-basic.git myLibrary
-npm install
+
+### SQL Dialect
+Support for configuring dialects is available for specific database drivers, such as SQLite, MySQL, and PostgreSQL, etc.
+
+### Referencing Qualified Tables
+Users are able to search for attributes from multiple data blocks while working within a specific block. This feature can assist users in locating and referencing related data with greater ease.
+
+![Code Completion Demo](assets/references.gif)
+
+
+## Installation
+
+```bash
+npm install atlas-monaco
 ```
 
-## 💎 Customization
+## Usage
 
-> Before shipping, make sure to:
+### Auto Register AtlasHcl
 
-1. Edit `LICENSE` file
-2. Edit `package.json` information (These will be used to generate the headers for your built files)
-3. Edit `library: "MyLibrary"` with your library's export name in `./webpack.config.js`
+```ts
+import { AutoRegisterToMonaco } from "../lib";
+import { Dialect } from "../lib/dialect";
 
-## 🚀 Deployment
-
-1. `npm publish`
-2. Your users can include your library as usual
-
-### npm
+AutoRegisterToMonaco(Dialect.sql)
 
 ```
-import MyLibrary from 'my-library';
-const libraryInstance = new MyLibrary();
-...
+
+By using the AutoRegisterToMonaco() function, all configurations will be registered, including tokens, extensions, and completion providers.
+
+### Manual Register AtlasHcl
+
+```ts
+
+const atlashcl = new AtlasHcl(dialect)
+  
+  // Register new language 
+  monaco.languages.register({
+    id: atlashcl.getLanguageName(),
+    extensions: atlashcl.getLanguageExt()
+  })
+
+  // Set Tokenizer vs Language config
+  monaco.languages.setLanguageConfiguration(
+    atlashcl.getLanguageName(), 
+    atlashcl.getLanguageConf())
+
+  monaco.languages.setMonarchTokensProvider(
+    atlashcl.getLanguageName(), 
+    atlashcl.getTokenProvider()
+  )
+
+  // Register completion logic
+  monaco.languages.registerCompletionItemProvide(
+    atlashcl.getLanguageName(),
+    atlashcl.getCompletionProvider()
+  )
+
 ```
 
-### self-host/cdn
+### Change Sql Dialect
+
+```ts
+
+const { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.sql)
 
 ```
-<script src="build/index.js"></script>
 
-const MyLibrary = window.MyLibrary.default;
-const libraryInstance = new MyLibrary();
-...
+After using the provided function from the library, it will provide the ability to safely dispose and register again.
+
+## Contrib
+
+### Custom SQL Resource 
+The configuration file is located at data/sql.ts. Follow these steps to configure the SQL resources:
+
+- Use an object with key-value pairs to define a resource.
+- Use a string with Attribute + Value to define a simple completion item.
+- Use an array with Attribute + Value to define a completion item that supports multiple options.
+- Use ${0|1|2|3} to define the position of the pointer after rendering. You can set priority by numbering the options.
+
+```ts
+
+mysql: {
+        schema: {
+            charset: "",
+            collate: "",
+            comment: ""
+        },
+
+        table: {
+            schema: "",
+            charset: "",
+            collate: "",
+            comment: "",
+            primary_key: {
+                columns: "[${0}]"
+            },
+            index: {
+                comment: "",
+                type: [
+                    "BTREE",
+                    "HASH",
+                    "FULLTEXT",
+                    ...
+
 ```
 
-## ✅ Libraries built with this boilerplate
+### Project Structure
 
-> Made a library using this starter kit? Share it here by [submitting a pull request](https://github.com/hodgef/js-library-boilerplate-basic/pulls)!
+```
+src
+ ┣ demo
+ ┃ ┣ index.css
+ ┃ ┗ index.ts
+ ┗ lib
+ ┃ ┣ autocompletion
+ ┃ ┃ ┣ hclparser.ts
+ ┃ ┃ ┗ index.ts
+ ┃ ┣ data
+ ┃ ┃ ┗ sql.ts
+ ┃ ┣ tests
+ ┃ ┃ ┗ index.test.ts
+ ┃ ┣ atlashcl.ts 
+ ┃ ┣ config.ts
+ ┃ ┣ dialect.ts
+ ┃ ┣ index.ts
+ ┃ ┗ monaco-hcl.d.ts
+```
 
-- [Canvas-Txt](https://github.com/geongeorge/Canvas-Txt) - A library to print multiline text on HTML5 canvas with better line breaks and alignments
-- [moon-phase-widget](https://github.com/g00dv1n/moon-phase-widget) - Super tiny javascript library to add awesome moon phase widget to your website
-- [simple-keyboard-autocorrect](https://github.com/hodgef/simple-keyboard-autocorrect) - Autocorrect module for simple-keyboard
-- [simple-keyboard-input-mask](https://github.com/hodgef/simple-keyboard-input-mask) - Input mask module for simple-keyboard
-- [simple-keyboard-key-navigation](https://github.com/hodgef/simple-keyboard-key-navigation) - Key navigation module for simple-keyboard
-- [swipe-keyboard](https://github.com/hodgef/swipe-keyboard) - Swype type keyboard module for simple-keyboard
