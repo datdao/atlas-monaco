@@ -10,7 +10,7 @@ body {
 body {
   margin-top: 10px;
   height: 100%;
-
+  
 }
 
 select {
@@ -26,4 +26,10 @@ select {
 h1 {
   margin: 0;
   font-weight: 300;
+}
+
+#editorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

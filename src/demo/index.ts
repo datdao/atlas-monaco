@@ -7,13 +7,6 @@ import * as monaco from 'monaco-editor';
 const select = document.createElement('select');
 
 // Add options to the select element
-select.innerHTML = `
-    <option value="${Dialect.sql}">${Dialect.sql}</option>
-    <option value="${Dialect.mysql}">${Dialect.mysql}</option>
-    <option value="${Dialect.postges}">${Dialect.postges}</option>
-`;
-
-// Add options to the select element
 select.innerHTML = Object.entries(getDialectKeyPair()).map((value) => `
   <option value="${value[0]}">${value[1]}</option>
 `).join('');
@@ -32,9 +25,16 @@ select.addEventListener('change', event => {
 
 // Generate UI
 const div = document.createElement('div');
+div.id = "editorContainer"
+
 document.body.appendChild(div);
 
-monaco.editor.create(document.querySelector("body") as HTMLElement, {
-    theme: 'vs-dark',
-    language: 'atlashcl'
+const editor = monaco.editor.create(document.getElementById("editorContainer") as HTMLElement, {
+    theme: 'vs',
+    language: 'atlashcl',
+    value: "# Hello\n",
+    dimension: {
+        height: 1000, // set the height of the editor to 400 pixels
+        width: 1000
+    }
 });
