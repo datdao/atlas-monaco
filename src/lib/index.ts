@@ -16,19 +16,22 @@ export function AutoRegisterToMonaco(dialect: Dialect) {
   monaco.languages.setLanguageConfiguration(
     atlashcl.getLanguageName(), 
     atlashcl.getLanguageConf())
-
   monaco.languages.setMonarchTokensProvider(
     atlashcl.getLanguageName(), 
     atlashcl.getTokenProvider()
   )
 
-  // Register completion logic
+  // Register completion provider
   let disposeCompletionItemProvider : monaco.IDisposable
   disposeCompletionItemProvider = monaco.languages.registerCompletionItemProvider(
     atlashcl.getLanguageName(),
     atlashcl.getCompletionProvider()
   )
 
+  /*
+      This function registers a completion item provider for the specified dialect.
+      It disposes of the previous completion item provider, if any.
+  */
   const registerCompletionItemProvider = (dialect : Dialect) => {
     if (disposeCompletionItemProvider != null) {
       disposeCompletionItemProvider.dispose()

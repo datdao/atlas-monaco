@@ -25,7 +25,6 @@ class CodeCompletion {
 				let range = hclParser.wordRange()
 				let resources = hclParser.listBlockScope()
 				
-				// References feature
 				if((context.triggerKind == 1 && context.triggerCharacter == ".")) {
 					let path = hclParser.parseCurrentWordToPath()
 					let referencedResourceValues = hclParser.findReferencedResourceValues(path)
@@ -55,8 +54,6 @@ class CodeCompletion {
 		return Object.keys(this.hclTmpl)
 	}
 
-
-	// Recursion function to get completion items
 	buildCompletionItems(scopes : string[] = [], hclTmpl : Object = null) : any[] {
 		let completionItems : any[] = []
 

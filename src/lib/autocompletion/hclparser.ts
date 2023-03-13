@@ -1,23 +1,38 @@
 import * as monaco from 'monaco-editor';
 
 const HCL_REGEX = {
-    // This regular expression matches an opening curly brace that is not followed by a closing curly brace in the same text
+    /*
+        table { }  => Match "{"  "}"
+    */
 	brackets: /{|}/gm, 
-    // This regular expression will match the resource type or name
+
+    /*
+        table "users" { }  => Match a first word in line "type", 
+    */
 	resourceType: /\w+/,
-    // This regular expression will match the resource name
+    
+    /*
+        table "users" { }  => Match "users"
+    */
 	resourceValue: /"(\w+)"/g,
 
+    /*
+        type = int  => Match "type"
+    */
     attributeType: /^\s*(\w+)\s*\=/g,
-
+    
+    /*
+        table.users.column.id  => Match "table", "users", "column" , reference Path Pattern
+    */
 	path: /(\w+)\./g,
 
-    // Find word end with "."
-    referencingWord: /([\w\.]+)\.[^\w]?$/g
+    /*
+        table.users.column.id, table.users.column. => Match "table.users.column."
+    */  
+    referencedWord: /([\w\.]+)\.[^\w]?$/g
 }
 
 const HCL_REGEX_FUNC = {
-    // This regular expression matches an opening curly brace that is not followed by a closing curly brace in the same text
 	bracket: (bracket: Bracket) => {
         return new RegExp(`${bracket.open}|${bracket.close}`, "gm")
     },
@@ -57,6 +72,13 @@ class HclParser {
         this.position = position
     }
 
+    /*
+        Position          Range
+            |    ---->      |
+            v               v
+        Schema         |Schema|
+            -
+    */
     wordRange() : monaco.IRange  {
         const word = this.textModel.getWordUntilPosition(this.position);
 
@@ -68,15 +90,34 @@ class HclParser {
         };
     }
 
+    /*
+         
+         ┌──────────────────────┐
+         ▼        ▼             │
+        table "users" {         │
+            column "id"  {  ◄───┴─── Start
+            }
+        }
+    */
     parentResource(position : monaco.Position = null): Resource {
-        // Find Open curly bracket that stand alone
         let lineNumber = this.findParentBracket(PairCurlyBracket, position, 1, Direction.up)
-
-        // Find resource type inline
         let resource = this.findResourceAtLineNumber(lineNumber)
 
         return resource
     }
+
+
+    /*
+        table "users" {  ◄──────┐
+                                │
+          column "id"   {  ◄────┴─┐
+                                  │
+            foreign_key "" {  ◄───┴─── Start
+
+            }
+          }
+        }
+    */
 
     parentResources(roots : string[] = []) {
         let resources : Resource[] = []
@@ -96,6 +137,13 @@ class HclParser {
     
         return resources.reverse()
     }
+
+    /*
+                      ▼
+        table "users" { ◄─────┐
+                              │
+            column "id" { ◄───┴── Start
+    */
 
     findParentBracket(
         pairBracket: Bracket = PairCurlyBracket, position: monaco.Position, 
@@ -123,6 +171,16 @@ class HclParser {
         
         return lineNumber
     }
+
+    /*
+                                        table  "users"  {
+                                        │
+                            │  ◄──────────┘ column  "id"  {
+                            │                │
+        [table,column,type] │    ◄───────────┘ type  =  int
+                            │                   │
+                            │      ◄────────────┘
+    */
     
     listBlockScope() : string[] {
         let scopes : string[] = []
@@ -139,6 +197,15 @@ class HclParser {
         
         return scopes
     }
+
+    /*
+        table  "admin"  "users"  {
+        ─────   ─────    ─────
+          ▲       ▲       ▲
+          │       │       │
+       resource  ─┴───────┴─
+                    values
+    */
 
     findResourceAtLineNumber(lineNumber : number) : Resource {
         let resourceType = this.textModel.getLineContent(lineNumber).match(HCL_REGEX.resourceType);
@@ -158,10 +225,18 @@ class HclParser {
         }
     }
 
+    /*
+        table.users.column.id.
+                │
+                │
+                ▼
+        [table,users,column,id]
+    */
+
     parseCurrentWordToPath() : string[] {
-        let content = this.textModel.getLineContent(this.position.lineNumber).match(HCL_REGEX.referencingWord)
+        let content = this.textModel.getLineContent(this.position.lineNumber).match(HCL_REGEX.referencedWord)
         let path : string[] = []
-        console.log(this.textModel.getLineContent(this.position.lineNumber), content, HCL_REGEX.referencingWord)
+        
         if (content == null) {
             return path
         }
@@ -174,6 +249,7 @@ class HclParser {
         return path
     }
 
+    
     fillMissingPath(path : string[]) : string[] {
         let resources = this.parentResources()
         let fullPath : string[] = []
@@ -198,6 +274,8 @@ class HclParser {
         return [...fullPath,...path]
     }
 
+
+
     // 1 = Outer | 2 = Inter | 0 = undefined
     compareRange(src : monaco.IRange, dst : monaco.IRange) : number {
         if (src.startLineNumber <= dst.startLineNumber && src.endLineNumber >= dst.endLineNumber) {
@@ -208,6 +286,18 @@ class HclParser {
             return 0
         }
     }
+
+    /*
+        table  "users"  {
+
+             column  "id"  {  ◄─────────────┐
+                                            │
+             }                              │
+                                            │
+             foreign_key  "user_fk"  {      │
+                                            │
+                columns  =  [column.  ──────┘
+    */
 
     findReferencedResourceValues(path : string[]) : string[] {
         let fullPath = this.fillMissingPath(path)
