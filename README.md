@@ -1,3 +1,6 @@
+<p>&nbsp;</p>
+
+
 ![Branches](./badges/coverage-branches.svg)
 ![Functions](./badges/coverage-functions.svg)
 ![Lines](./badges/coverage-lines.svg)
@@ -136,8 +139,17 @@ src
  ┃ ┣ data
  ┃ ┃ ┗ sql.ts
  ┃ ┣ tests
+ ┃ ┃ ┣ autocompletion
+ ┃ ┃ ┃ ┣ testdata
+ ┃ ┃ ┃ ┃ ┣ hcltmpl.ts
+ ┃ ┃ ┃ ┃ ┣ model.ts
+ ┃ ┃ ┃ ┃ ┗ regex.ts
+ ┃ ┃ ┃ ┣ hclparser.test.ts
+ ┃ ┃ ┃ ┗ index.test.ts
+ ┃ ┃ ┣ atlashcl.test.ts
+ ┃ ┃ ┣ dialect.test.ts
  ┃ ┃ ┗ index.test.ts
- ┃ ┣ atlashcl.ts 
+ ┃ ┣ atlashcl.ts
  ┃ ┣ config.ts
  ┃ ┣ dialect.ts
  ┃ ┣ index.ts

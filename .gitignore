@@ -3,3 +3,4 @@ assets/.DS_Store
 dist
 DS_Store
 coverage
+build
