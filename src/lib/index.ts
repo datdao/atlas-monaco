@@ -33,9 +33,7 @@ export function AutoRegisterToMonaco(dialect: Dialect) {
       It disposes of the previous completion item provider, if any.
   */
   const registerCompletionItemProvider = (dialect : Dialect) => {
-    if (disposeCompletionItemProvider != null) {
-      disposeCompletionItemProvider.dispose()
-    }
+    disposeCompletionItemProvider.dispose()
 
     const atlashcl = new AtlasHcl(dialect)
     disposeCompletionItemProvider = monaco.languages.registerCompletionItemProvider(

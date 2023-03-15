@@ -6,8 +6,9 @@ import HclParser from './hclparser';
 class CodeCompletion {
 	private hclTmpl: Object;
 
-    constructor(dialect : Dialect) {
-		this.hclTmpl = sql[dialect]
+    constructor(dialect : Dialect, hclTmpl : Object = sql) {
+		this.hclTmpl = hclTmpl[dialect]
+
 	}
 
 	items(): monaco.languages.CompletionItemProvider {
@@ -22,7 +23,7 @@ class CodeCompletion {
 				context : monaco.languages.CompletionContext) : monaco.languages.ProviderResult<monaco.languages.CompletionList> {
 
 				let hclParser = new HclParser(textModel, position)
-				let range = hclParser.wordRange()
+				let range = hclParser.getWordRange()
 				let resources = hclParser.listBlockScope()
 				
 				if((context.triggerKind == 1 && context.triggerCharacter == ".")) {
@@ -50,10 +51,6 @@ class CodeCompletion {
 		}
 	}
 
-	getRootResources(): string[] {
-		return Object.keys(this.hclTmpl)
-	}
-
 	buildCompletionItems(scopes : string[] = [], hclTmpl : Object = null) : any[] {
 		let completionItems : any[] = []
 
@@ -70,7 +67,8 @@ class CodeCompletion {
 				
 				// Push Resource completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => {
-					return this.isValidScope(scopes, definedScopes) ? this.buildResourceCompletionTemplate(range, key) : undefined
+					return this.isValidScope(scopes, definedScopes) ? 
+					this.buildResourceCompletionTemplate(range, key) : undefined
 				})
 
 				
@@ -86,24 +84,28 @@ class CodeCompletion {
 			if (Object.prototype.toString.call(value) === '[object Array]') {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
-					return this.isValidScope(scopes, definedScopes) ? this.buildAttrValueCompletionTemplate(range, key, "") : null
+					return this.isValidScope(scopes, definedScopes) ? 
+					this.buildAttrValueCompletionTemplate(range, key, "") : null
 				})
 
 				let valueDefinedScopes = [...scopes]
 				Object.entries(value).forEach(([k, v]) => {
 					completionItems.push((range : monaco.IRange, resources: string[]) => { 
-						return this.isValidScope(resources, valueDefinedScopes) ? this.buildValueCompletionTemplate(range, v as string) : null
+						return this.isValidScope(resources, valueDefinedScopes) ?
+						this.buildValueCompletionTemplate(range, v as string) : null
 					})
 				})
 			} else if (Object.prototype.toString.call(value) === '[object String]' && value != "") {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
-					return this.isValidScope(scopes, definedScopes) ? this.buildAttrValueCompletionTemplate(range, key, value) : null
+					return this.isValidScope(scopes, definedScopes) ? 
+					this.buildAttrValueCompletionTemplate(range, key, value) : null
 				})
 			} else {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
-					return this.isValidScope(scopes, definedScopes) ? this.buildAttrDefaultCompletionTemplate(range, key) : null
+					return this.isValidScope(scopes, definedScopes) ? 
+					this.buildAttrDefaultCompletionTemplate(range, key) : null
 				})
 			}
 
@@ -117,10 +119,10 @@ class CodeCompletion {
 	}
 
 	buildGlobalSearchCompletionItems() : any {
-		return (valueReferenced : string[]) => {
+		return (referencedValue : string[]) => {
 			let completionItems : any[] = []
 
-			valueReferenced.forEach((v) => {
+			referencedValue.forEach((v) => {
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
 					return this.buildReferenceCompletionTemplate(range, v)
 				})
@@ -143,7 +145,7 @@ class CodeCompletion {
 	}
 
 	// Resource template
-	buildReferenceCompletionTemplate(range : monaco.IRange, key : string) {
+	buildReferenceCompletionTemplate(range : monaco.IRange = null, key : string) {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Method,

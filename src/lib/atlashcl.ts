@@ -12,18 +12,26 @@ export interface IAtlasHcl {
   getCompletionProvider(): monaco.languages.CompletionItemProvider
 }
 
+export interface ICodeCompletion {
+  items() : monaco.languages.CompletionItemProvider
+}
+
 class AtlasHcl implements IAtlasHcl {
     private dialect: Dialect;
     private config: Config;
-    private codeCompletion: CodeCompletion;
+    private codeCompletion: ICodeCompletion;
   
     constructor(
       dialect : Dialect = Dialect.sql, 
-      config : Config = defaultConfig()) {
+      config : Config = defaultConfig(),
+      codeCompletion: ICodeCompletion = null) {
       this.dialect = dialect
       this.config = config
+      this.codeCompletion = codeCompletion
       
-      this.codeCompletion = new CodeCompletion(this.dialect)
+      if (codeCompletion == null) {
+        this.codeCompletion = new CodeCompletion(this.dialect)
+      }
     }
   
     getLanguageConf(): object {
