@@ -14,36 +14,36 @@ const codeCompletionMock = {
 
 describe('atlashcl', () => {
     test('getLanguageConf', () => {
-        // let atlashcl = new AtlasHcl()
-        // let result =  atlashcl.getLanguageConf()
+        let atlashcl = new AtlasHcl()
+        let result =  atlashcl.getLanguageConf()
 
-        // expect(result).toBeUndefined()
+        expect(result).toBeUndefined()
     })
 
-    // test('getLanguageName', () => {
-    //     let atlashcl = new AtlasHcl()
-    //     let result =  atlashcl.getLanguageName()
+    test('getLanguageName', () => {
+        let atlashcl = new AtlasHcl()
+        let result =  atlashcl.getLanguageName()
 
-    //     expect(result).toEqual("atlashcl")
-    // })
+        expect(result).toEqual("atlashcl")
+    })
 
-    // test('getLanguageExt', () => {
-    //     let atlashcl = new AtlasHcl()
-    //     let result =  atlashcl.getLanguageExt()
+    test('getLanguageExt', () => {
+        let atlashcl = new AtlasHcl()
+        let result =  atlashcl.getLanguageExt()
 
-    //     expect(result).toEqual([".hcl"])
-    // })
+        expect(result).toEqual([".hcl"])
+    })
 
-    // test('getTokenProvider', () => {
-    //     let atlashcl = new AtlasHcl()
-    //     let result =  atlashcl.getTokenProvider()
+    test('getTokenProvider', () => {
+        let atlashcl = new AtlasHcl()
+        let result =  atlashcl.getTokenProvider()
 
-    //     expect(result).toBeUndefined()
-    // })
+        expect(result).toBeUndefined()
+    })
 
-    // test('new atlas with custom code completion', () => {
-    //     let atlashcl = new AtlasHcl(Dialect.sql, defaultConfig as any, codeCompletionMock)
-    //     const result = atlashcl.getCompletionProvider()
-    //     expect(codeCompletionMock.items).toBeCalled()
-    // })
+    test('new atlas with custom code completion', () => {
+        let atlashcl = new AtlasHcl(Dialect.sql, defaultConfig as any, codeCompletionMock)
+        const result = atlashcl.getCompletionProvider()
+        expect(codeCompletionMock.items).toBeCalled
+    })
 })
