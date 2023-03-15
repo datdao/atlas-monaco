@@ -1,6 +1,6 @@
 export declare enum Dialect {
     sql = "sql",
     mysql = "mysql",
-    postges = "postgres"
+    postgresql = "postgresql"
 }
 export declare function getDialectKeyPair(): Object;

@@ -8,11 +8,14 @@ export interface IAtlasHcl {
     getTokenProvider(): monaco.languages.IMonarchLanguage;
     getCompletionProvider(): monaco.languages.CompletionItemProvider;
 }
+export interface ICodeCompletion {
+    items(): monaco.languages.CompletionItemProvider;
+}
 declare class AtlasHcl implements IAtlasHcl {
     private dialect;
     private config;
     private codeCompletion;
-    constructor(dialect?: Dialect, config?: Config);
+    constructor(dialect?: Dialect, config?: Config, codeCompletion?: ICodeCompletion);
     getLanguageConf(): object;
     getLanguageName(): string;
     getLanguageExt(): string[];

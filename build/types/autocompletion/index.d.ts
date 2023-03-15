@@ -2,9 +2,8 @@ import * as monaco from 'monaco-editor';
 import { Dialect } from "../dialect";
 declare class CodeCompletion {
     private hclTmpl;
-    constructor(dialect: Dialect);
+    constructor(dialect: Dialect, hclTmpl?: Object);
     items(): monaco.languages.CompletionItemProvider;
-    getRootResources(): string[];
     buildCompletionItems(scopes?: string[], hclTmpl?: Object): any[];
     buildGlobalSearchCompletionItems(): any;
     buildResourceCompletionTemplate(range: monaco.IRange, key: string): {

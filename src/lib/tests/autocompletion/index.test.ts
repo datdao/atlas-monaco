@@ -1,6 +1,6 @@
 import CodeCompletion from "../../autocompletion"
 import { Dialect } from "../../dialect"
-import { sql } from "./testdata/hclTmpl"
+import { sql } from "./testdata/hcltmpl"
 import { textModel } from "./testdata/model"
 
 describe('autocompletion', () => {
@@ -139,7 +139,6 @@ describe('autocompletion', () => {
             for (let completionItem of completionItems) {
                 completionItem = completionItem(null as any, ["table"])
                 if (completionItem != null) {
-                    console.log(completionItem)
                     result.push(completionItem)
                 }
                 
