@@ -1,5 +1,8 @@
 name: jest-badge-generate
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
   bump:
     runs-on: ubuntu-latest
