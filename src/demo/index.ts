@@ -15,7 +15,7 @@ select.innerHTML = Object.entries(getDialectKeyPair()).map((value) => `
 document.body.appendChild(select);
 
 // Auto register config to Monaco Editor and return func to register again
-const { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.sql)
+const { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.mysql)
 
 // On change Dialect
 select.addEventListener('change', event => {

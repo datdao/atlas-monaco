@@ -1,5 +1,5 @@
 export const sql = {
-    sql: {
+    sqlite: {
         schema: {
             charset: "\"${0}\"",
         },

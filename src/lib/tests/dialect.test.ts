@@ -4,7 +4,7 @@ describe('dialect', () => {
     test('getDialectKeyPair', () => {
         const result = getDialectKeyPair()
         expect(result).toEqual({
-            sql: "sql",
+            sqlite: "sqlite",
             mysql: "mysql",
             postgresql: "postgresql"
         })

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
  export enum Dialect {
-    sql = "sql",
+    sqlite = "sqlite",
     mysql = "mysql",
     postgresql = "postgresql"
 }

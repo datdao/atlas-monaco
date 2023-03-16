@@ -5,7 +5,7 @@ import { textModel } from "./testdata/model"
 
 describe('autocompletion', () => {
     test('buildResourceCompletionTemplate', () => {
-        const codeConpletion = new CodeCompletion(Dialect.sql)
+        const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
         expect(codeConpletion.buildResourceCompletionTemplate(null as any, "table")).toEqual({
             label: "table",
@@ -18,7 +18,7 @@ describe('autocompletion', () => {
     })
 
     test('buildReferenceCompletionTemplate', () => {
-        const codeConpletion = new CodeCompletion(Dialect.sql)
+        const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
         expect(codeConpletion.buildReferenceCompletionTemplate(null as any, "table")).toEqual({
             label: "table",
@@ -30,7 +30,7 @@ describe('autocompletion', () => {
     })
 
     test('buildAttrDefaultCompletionTemplate', () => {
-        const codeConpletion = new CodeCompletion(Dialect.sql)
+        const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
         expect(codeConpletion.buildAttrDefaultCompletionTemplate(null as any, "table")).toEqual({
             label: "table",
@@ -42,7 +42,7 @@ describe('autocompletion', () => {
     })
 
     test('buildAttrValueCompletionTemplate', () => {
-        const codeConpletion = new CodeCompletion(Dialect.sql)
+        const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
         expect(codeConpletion.buildAttrValueCompletionTemplate(null as any, "type", "int")).toEqual({
             label: "type",
@@ -54,7 +54,7 @@ describe('autocompletion', () => {
     })
 
     test('buildValueCompletionTemplate', () => {
-        const codeConpletion = new CodeCompletion(Dialect.sql)
+        const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
         expect(codeConpletion.buildValueCompletionTemplate(null as any, "int")).toEqual({
             label: "int",
@@ -67,19 +67,19 @@ describe('autocompletion', () => {
 
     describe('isValidScope', () => {
         test('default', () => {
-            const codeConpletion = new CodeCompletion(Dialect.sql)
+            const codeConpletion = new CodeCompletion(Dialect.sqlite)
     
             expect(codeConpletion.isValidScope()).toEqual(true)
         })
     
         test('invalid length', () => {
-            const codeConpletion = new CodeCompletion(Dialect.sql)
+            const codeConpletion = new CodeCompletion(Dialect.sqlite)
     
             expect(codeConpletion.isValidScope([], ["table"])).toEqual(false)
         })
 
         test('invalid scope at second element', () => {
-            const codeConpletion = new CodeCompletion(Dialect.sql)
+            const codeConpletion = new CodeCompletion(Dialect.sqlite)
     
             expect(codeConpletion.isValidScope(["table", "columns"], ["table"])).toEqual(false)
         })
@@ -87,7 +87,7 @@ describe('autocompletion', () => {
 
     describe('buildGlobalSearchCompletionItems', () => {
         test('default', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite)
             const completionItems = codeCompletion.buildGlobalSearchCompletionItems()(["users"])
 
             const result : any = []
@@ -98,7 +98,7 @@ describe('autocompletion', () => {
         })
 
         test('with 2 values', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite)
             const completionItems = codeCompletion.buildGlobalSearchCompletionItems()(["users", "orders"])
 
             const result : any = []
@@ -115,7 +115,7 @@ describe('autocompletion', () => {
 
     describe('buildCompletionItems', () => {
         test('default', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionItems = codeCompletion.buildCompletionItems([], null as any)
 
             const result : any = []
@@ -132,7 +132,7 @@ describe('autocompletion', () => {
         })
 
         test('lvl1 suggestion', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionItems = codeCompletion.buildCompletionItems([], null as any)
 
             const result : any = []
@@ -149,7 +149,7 @@ describe('autocompletion', () => {
         })
 
         test('lvl2 suggestion', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionItems = codeCompletion.buildCompletionItems([], null as any)
 
             const result : any = []
@@ -167,7 +167,7 @@ describe('autocompletion', () => {
         })
 
         test('lvl2 value suggestion', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionItems = codeCompletion.buildCompletionItems([], null as any)
 
             const result : any = []
@@ -186,7 +186,7 @@ describe('autocompletion', () => {
 
     describe('items', () => {
         test('suggestion at root position', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {
@@ -212,7 +212,7 @@ describe('autocompletion', () => {
         })
 
         test('suggestion at lvl1 position', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {
@@ -239,7 +239,7 @@ describe('autocompletion', () => {
         })
 
         test('suggestion at lvl2 position', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {
@@ -265,7 +265,7 @@ describe('autocompletion', () => {
         })
 
         test('suggestion at lvl2 position v2', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {
@@ -293,7 +293,7 @@ describe('autocompletion', () => {
         })
 
         test('suggestion at lvl1 position with value', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {
@@ -319,7 +319,7 @@ describe('autocompletion', () => {
         })
 
         test('absolute path', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {
@@ -344,7 +344,7 @@ describe('autocompletion', () => {
         })
 
         test('relative path', () => {
-            const codeCompletion = new CodeCompletion(Dialect.sql, sql)
+            const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
             const completionProvider = codeCompletion.items()
 
             const position: any = {

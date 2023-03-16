@@ -42,7 +42,7 @@ describe('atlashcl', () => {
     })
 
     test('new atlas with custom code completion', () => {
-        const atlashcl = new AtlasHcl(Dialect.sql, defaultConfig as any, codeCompletionMock)
+        const atlashcl = new AtlasHcl(Dialect.mysql, defaultConfig as any, codeCompletionMock)
         atlashcl.getCompletionProvider()
         expect(codeCompletionMock.items).toBeCalled
     })

@@ -147,7 +147,7 @@ export default {
             auto_increment: dataType.number
         }
     },
-    sql: {
+    sqlite: {
         schema: {
             charset: dataType.string,
             collate: dataType.string,

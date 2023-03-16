@@ -22,7 +22,7 @@ class AtlasHcl implements IAtlasHcl {
     private codeCompletion: ICodeCompletion;
   
     constructor(
-      dialect : Dialect = Dialect.sql, 
+      dialect : Dialect = Dialect.mysql, 
       config : Config = defaultConfig(),
       codeCompletion: ICodeCompletion = null) {
       this.dialect = dialect
