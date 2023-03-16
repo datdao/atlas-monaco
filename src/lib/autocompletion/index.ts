@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor';
-import sql from '../data/sql';
+import sql, { resourceConfig } from '../data/sql';
 import { Dialect } from "../dialect";
 import { decrementingCursorPosition } from "./util";
 import HclParser from './hclparser';
@@ -69,7 +69,7 @@ class CodeCompletion {
 				// Push Resource completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => {
 					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildResourceCompletionTemplate(range, key) : undefined
+					this.buildResourceCompletionTemplate(range, key, resourceConfig[[...scopes,key].join(".")]) : undefined
 				})
 
 				
@@ -131,12 +131,15 @@ class CodeCompletion {
 	}
 
 	// Resource template
-	buildResourceCompletionTemplate(range : monaco.IRange, key : string) {
+	buildResourceCompletionTemplate(range : monaco.IRange, key : string, config: any = null) {
+		
+		const name = (config?.allowNullName ? '' : '"${?}"')
+		console.log(config)
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Method,
 			detail: "",
-			insertText: decrementingCursorPosition(key + ' "${?}" {\n\t${?}\n}'),
+			insertText: decrementingCursorPosition(key + ' ' + name +' {\n\t${?}\n}'),
 			insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 			range: range,
 		}

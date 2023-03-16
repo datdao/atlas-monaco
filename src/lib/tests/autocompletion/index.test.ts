@@ -286,7 +286,7 @@ describe('autocompletion', () => {
                     codeCompletion.buildAttrValueCompletionTemplate(range as any, "comment", "\"${0}\""),
                     codeCompletion.buildAttrValueCompletionTemplate(range as any, "columns", "[${0}]"),
                     codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "unique"),
-                    codeCompletion.buildResourceCompletionTemplate(range as any, "on")
+                    codeCompletion.buildResourceCompletionTemplate(range as any, "on", {allowNullName: true})
                 ]  
             } 
             )

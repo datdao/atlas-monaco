@@ -23,6 +23,27 @@ export const dataType = {
     }
 }
 
+export const resourceConfig = {
+    "table.primary_key": {
+        allowNullName: true,
+    },
+    on: {
+        allowNullName: true
+    },
+    "table.partition": {
+        allowNullName: true
+    },
+    "table.partition.by": {
+        allowNullName: true
+    },
+    "table.column.as": {
+        allowNullName: true
+    },
+    "table.index.on": {
+        allowNullName: true
+    } 
+}
+
 export default {
     mysql: {
         schema: {
