@@ -7,7 +7,7 @@ describe('index', () => {
       AutoRegisterToMonaco(Dialect.sql)
 
       expect(monaco.languages.register.call).toHaveLength(1);
-      expect(monaco.languages.setLanguageConfiguration.call).toHaveLength(0);
+      expect(monaco.languages.setLanguageConfiguration.call).toHaveLength(1);
       expect(monaco.languages.setMonarchTokensProvider.call).toHaveLength(1);
       expect(monaco.languages.registerCompletionItemProvider.call).toHaveLength(1);
   })
