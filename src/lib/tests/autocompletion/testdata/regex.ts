@@ -21,8 +21,15 @@ const hclPath = {
     endWithEnclosedCharacter: `table.users.]`
 }
 
+const hclRawPath = {
+    default: `table.`,
+    array: "[table.users, column.users.dw , column.",
+    arrayWithEndClosedCharacter: "[table.users, column.users.dw , column.]",
+}
+
 export { 
     hclResourceLine,
     hclAttrLine,
-    hclPath
+    hclPath,
+    hclRawPath
 };

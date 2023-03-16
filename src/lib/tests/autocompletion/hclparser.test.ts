@@ -129,6 +129,38 @@ describe('regex', () => {
             expect(values).toEqual(["table", "users"]);
         });
     })
+
+    describe('rawPath', () => {
+        test('default', () => {
+            let match;
+            const values : string[] = [];
+            while ((match = hclParser.HCL_REGEX.rawPath.exec(regexdata.hclRawPath.default)) !== null) {
+                values.push(match[1])
+            }
+
+            expect(values).toEqual(["table."]);
+        });
+
+        test('array', () => {
+            let match;
+            const values : string[] = [];
+            while ((match = hclParser.HCL_REGEX.rawPath.exec(regexdata.hclRawPath.array)) !== null) {
+                values.push(match[1])
+            }
+
+            expect(values).toEqual(["column."]);
+        });
+
+        test('arrayWithEndClosedCharacter', () => {
+            let match;
+            const values : string[] = [];
+            while ((match = hclParser.HCL_REGEX.rawPath.exec(regexdata.hclRawPath.arrayWithEndClosedCharacter)) !== null) {
+                values.push(match[1])
+            }
+
+            expect(values).toEqual(["column."]);
+        });
+    })
 });
 
 

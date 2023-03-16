@@ -20,6 +20,11 @@ export const HCL_REGEX = {
         table.users.column.id  => Match "table", "users", "column" , reference Path Pattern
     */
 	path: /(\w+)\./g,
+
+    /*
+        [table.users, column.users , column.users.]  => Match "column.users."
+    */
+    rawPath: /(\w+\.)+([^\w]|$)/g
 }
 
 export const HCL_REGEX_FUNC = {
@@ -226,7 +231,8 @@ class HclParser {
         const path : string[] = []
         let match;
 
-        while ((match = HCL_REGEX.path.exec(this.textModel.getLineContent(this.position.lineNumber))) !== null) {
+        const rawPath = this.textModel.getLineContent(this.position.lineNumber).match(HCL_REGEX.rawPath)[0]
+        while ((match = HCL_REGEX.path.exec(rawPath)) !== null) {
             path.push(match[1])
         }
         
