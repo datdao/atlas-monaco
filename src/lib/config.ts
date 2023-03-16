@@ -5,7 +5,7 @@ export type Config = {
     name: string,
     ext: string[],
     token: monaco.languages.IMonarchLanguage,
-    conf: object
+    conf: any
 }
 
 export function defaultConfig() {

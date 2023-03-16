@@ -1,5 +1,5 @@
 import { Dialect } from '../dialect';
-import AtlasHcl, { AutoRegisterToMonaco } from '../index';
+import { AutoRegisterToMonaco } from '../index';
 import * as monaco from 'monaco-editor'
 
 describe('index', () => {
@@ -13,7 +13,7 @@ describe('index', () => {
   })
   
   test('registerCompletionItemProvider', () => {
-      let { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.sql)
+      const { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.sql)
       registerCompletionItemProvider(Dialect.sql)
 
       expect(monaco.languages.registerCompletionItemProvider.call).toHaveLength(1);

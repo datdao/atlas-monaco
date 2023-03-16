@@ -37,7 +37,7 @@ describe('regex', () => {
     describe('resourceValue', () => {
         test('default', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.resourceValue.exec(regexdata.hclResourceLine.default)) !== null) {
                 values.push(match[1])
             }
@@ -47,7 +47,7 @@ describe('regex', () => {
 
         test('multivalues', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.resourceValue.exec(regexdata.hclResourceLine.multivalues)) !== null) {
                 values.push(match[1])
             }
@@ -59,7 +59,7 @@ describe('regex', () => {
     describe('attributeType', () => {
         test('default', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.default)) !== null) {
                 values.push(match[1])
             }
@@ -69,7 +69,7 @@ describe('regex', () => {
 
         test('defaultWithManySpace', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.defaultWithManySpace)) !== null) {
                 values.push(match[1])
             }
@@ -79,7 +79,7 @@ describe('regex', () => {
 
         test('uncomplete', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.uncomplete)) !== null) {
                 values.push(match[1])
             }
@@ -91,7 +91,7 @@ describe('regex', () => {
     describe('path', () => {
         test('default', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.default)) !== null) {
                 values.push(match[1])
             }
@@ -101,7 +101,7 @@ describe('regex', () => {
 
         test('multiPath', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.multiPath)) !== null) {
                 values.push(match[1])
             }
@@ -111,7 +111,7 @@ describe('regex', () => {
 
         test('uncomplete', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.uncomplete)) !== null) {
                 values.push(match[1])
             }
@@ -121,7 +121,7 @@ describe('regex', () => {
 
         test('endWithEnclosedCharacter', () => {
             let match;
-            let values : string[] = [];
+            const values : string[] = [];
             while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.endWithEnclosedCharacter)) !== null) {
                 values.push(match[1])
             }
@@ -135,10 +135,10 @@ describe('regex', () => {
 describe('parser', () => {
     describe('getWordRange', () => {
         test('default', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
-            let range = parser.getWordRange()
+            const range = parser.getWordRange()
 
             expect(range).toEqual({
                 startLineNumber: undefined,
@@ -152,10 +152,10 @@ describe('parser', () => {
 
     describe('findResourceAtLineNumber', () => {
         test('resourceLine', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 2} as any)
-            let result = parser.findResourceAtLineNumber(2)
+            const result = parser.findResourceAtLineNumber(2)
 
             expect(result).toEqual({
                 resource: "table",
@@ -165,10 +165,10 @@ describe('parser', () => {
         })
 
         test('resourceLineMultiValues', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 12} as any)
-            let result = parser.findResourceAtLineNumber(12)
+            const result = parser.findResourceAtLineNumber(12)
 
             expect(result).toEqual({
                 resource: "table",
@@ -178,19 +178,19 @@ describe('parser', () => {
         })
 
         test('attrLine', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
-            let result = parser.findResourceAtLineNumber(5)
+            const result = parser.findResourceAtLineNumber(5)
 
             expect(result).toBeUndefined()
         })
 
         test('resourceLineEmptyValue', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 7} as any)
-            let result = parser.findResourceAtLineNumber(7)
+            const result = parser.findResourceAtLineNumber(7)
 
             expect(result).toEqual({
                 resource: "primary_key",
@@ -202,87 +202,87 @@ describe('parser', () => {
 
     describe('findParentBracket', () => {
         test('default', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 4} as any, 1, hclParser.Direction.up)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 4} as any, 1, hclParser.Direction.up)
 
             expect(result).toEqual(2)
         })
 
         test('position at root', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 2} as any, 1, hclParser.Direction.up)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 2} as any, 1, hclParser.Direction.up)
 
             expect(result).toBeUndefined()
         })
 
         test('position at lvl2', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 8} as any, 1, hclParser.Direction.up)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 8} as any, 1, hclParser.Direction.up)
             expect(result).toEqual(7)
         })
 
         test('position at lvl2 and find bracket at lvl1', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 7} as any, 2, hclParser.Direction.up)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 7} as any, 2, hclParser.Direction.up)
             expect(result).toBeUndefined()
         })
 
         test('position at lvl1 with Direction down ', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 3} as any, 1, hclParser.Direction.down)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 3} as any, 1, hclParser.Direction.down)
             expect(result).toEqual(10)
         })
 
         test('position at lvl2 with Direction down ', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 5} as any, 1, hclParser.Direction.down)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 5} as any, 1, hclParser.Direction.down)
             expect(result).toEqual(6)
         })
 
         test('position at lvl3 with Direction down ', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 16} as any, 1, hclParser.Direction.down)
+            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 16} as any, 1, hclParser.Direction.down)
             expect(result).toEqual(18)
         })
 
         test('default params', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.findParentBracket()
+            const result = parser.findParentBracket()
             expect(result).toEqual(undefined)
         })
     })
 
     describe('parentResource', () => {
         test('position at level1', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.parentResource({lineNumber: 3} as any)
+            const result = parser.parentResource({lineNumber: 3} as any)
             expect(result).toEqual({
                 resource: "table",
                 values: ["users"],
@@ -291,11 +291,11 @@ describe('parser', () => {
         })
 
         test('position at level2', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.parentResource({lineNumber: 5} as any)
+            const result = parser.parentResource({lineNumber: 5} as any)
             expect(result).toEqual({
                 resource: "column",
                 values: ["id"],
@@ -304,11 +304,11 @@ describe('parser', () => {
         })
 
         test('position at level3 with null value', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            let result = parser.parentResource({lineNumber: 8} as any)
+            const result = parser.parentResource({lineNumber: 8} as any)
             expect(result).toEqual({
                 resource: "primary_key",
                 values: [],
@@ -319,11 +319,11 @@ describe('parser', () => {
 
     describe('parentResources', () => {
         test('position at level1', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            let result = parser.parentResources()
+            const result = parser.parentResources()
             expect(result).toEqual([
                 {
                     resource: "table",
@@ -334,11 +334,11 @@ describe('parser', () => {
         })
 
         test('position at level2', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
-            let result = parser.parentResources()
+            const result = parser.parentResources()
             expect(result).toEqual([
                 {
                     resource: "table",
@@ -354,11 +354,11 @@ describe('parser', () => {
         })
 
         test('position at level3 with null value', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
 
-            let result = parser.parentResources()
+            const result = parser.parentResources()
             expect(result).toEqual([
                 {
                     resource: "table",
@@ -376,94 +376,94 @@ describe('parser', () => {
 
     describe('listBlockScope', () => {
         test('position at block level 1', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 2} as any)
 
-            let result = parser.listBlockScope()
+            const result = parser.listBlockScope()
             expect(result).toEqual([])
         })
 
         test('position at block lvl2', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            let result = parser.listBlockScope()
+            const result = parser.listBlockScope()
             expect(result).toEqual(["table","schema"])
         })
 
         test('position at block lvl3', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
-            let result = parser.listBlockScope()
+            const result = parser.listBlockScope()
             expect(result).toEqual(["table", "column", "type"])
         })
     })
 
     describe('parseCurrentWordToPath', () => {
         test('default', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            let result = parser.parseCurrentWordToPath()
+            const result = parser.parseCurrentWordToPath()
             expect(result).toEqual(["schema"])
         })
 
         test('absolutepath', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 22} as any)
 
-            let result = parser.parseCurrentWordToPath()
+            const result = parser.parseCurrentWordToPath()
             expect(result).toEqual(["table","users","column"])
         })
 
         test('relativepath', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 21} as any)
 
-            let result = parser.parseCurrentWordToPath()
+            const result = parser.parseCurrentWordToPath()
             expect(result).toEqual(["column"])
         })
     })
 
     describe('fillMissingPath', () => {
         test('default', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            let result = parser.fillMissingPath(["schema"])
+            const result = parser.fillMissingPath(["schema"])
             expect(result).toEqual([])
         })
 
         test('absolutepath', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 22} as any)
 
-            let result = parser.fillMissingPath(["table","users","column"])
+            const result = parser.fillMissingPath(["table","users","column"])
             expect(result).toEqual(["table","users","column"])
         })
 
         test('relativepath', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 21} as any)
 
-            let result = parser.fillMissingPath(["column"])
+            const result = parser.fillMissingPath(["column"])
             expect(result).toEqual(["table","orders","column"])
         })
     })
 
     describe('compareRange', () => {
         test('inner', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
             const result = parser.compareRange({
@@ -478,7 +478,7 @@ describe('parser', () => {
         })
 
         test('outer', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
             
@@ -494,7 +494,7 @@ describe('parser', () => {
         })
 
         test('undefined', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
             const result = parser.compareRange({
@@ -511,7 +511,7 @@ describe('parser', () => {
 
     describe('findReferencedResourceValues', () => {
         test('absolute path', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 1} as any)
             const result = parser.findReferencedResourceValues(["table"])
@@ -522,7 +522,7 @@ describe('parser', () => {
         })
 
         test('absolute path lvl2', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 1} as any)
             const result = parser.findReferencedResourceValues(["table","users","column"])
@@ -533,7 +533,7 @@ describe('parser', () => {
         })
 
         test('relative path lvl2 ', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
             const result = parser.findReferencedResourceValues(["column"])
@@ -542,7 +542,7 @@ describe('parser', () => {
         })
 
         test('relative path lvl3', () => {
-            let parser = new HclParser(
+            const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
             const result = parser.findReferencedResourceValues(["column"])
@@ -553,11 +553,11 @@ describe('parser', () => {
 
     describe('recursive test', () => {
         test('findParentBracket', () => {
-            let lines = modeldata.content.split("\n");
+            const lines = modeldata.content.split("\n");
             for(let line = 0; line < modeldata.textModel.getLineCount(); line++) {
                 
                 for(let column = 0; column < lines[line].length ; column++) {
-                    let parser = new HclParser(
+                    const parser = new HclParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
                     parser.findParentBracket(
@@ -573,11 +573,11 @@ describe('parser', () => {
         })
 
         test('parentResources', () => {
-            let lines = modeldata.content.split("\n");
+            const lines = modeldata.content.split("\n");
             for(let line = 0; line < modeldata.textModel.getLineCount(); line++) {
                 
                 for(let column = 0; column < lines[line].length ; column++) {
-                    let parser = new HclParser(
+                    const parser = new HclParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
                     parser.parentResources()
@@ -589,11 +589,11 @@ describe('parser', () => {
         })
 
         test('findReferencedResourceValues', () => {
-            let lines = modeldata.content.split("\n");
+            const lines = modeldata.content.split("\n");
             for(let line = 0; line < modeldata.textModel.getLineCount(); line++) {
                 
                 for(let column = 0; column < lines[line].length ; column++) {
-                    let parser = new HclParser(
+                    const parser = new HclParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
                     parser.findReferencedResourceValues(getRandomElement([[""], ["table"], ["column", "users"], [0,1,2], [null]]))

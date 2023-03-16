@@ -7,7 +7,7 @@ import CodeCompletion from "./autocompletion";
 export interface IAtlasHcl {
   getLanguageName(): string
   getLanguageExt(): string[]
-  getLanguageConf(): object
+  getLanguageConf(): any
   getTokenProvider(): monaco.languages.IMonarchLanguage
   getCompletionProvider(): monaco.languages.CompletionItemProvider
 }
@@ -34,7 +34,7 @@ class AtlasHcl implements IAtlasHcl {
       }
     }
   
-    getLanguageConf(): object {
+    getLanguageConf(): any {
       return this.config.conf
     }
   

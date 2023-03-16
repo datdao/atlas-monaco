@@ -4,7 +4,7 @@ export const HCL_REGEX = {
     /*
         table "users" { }  => Match a first word in line "type", 
     */
-	resourceType: /(\w+).*(?<![\"]){(?![\"])/,
+	resourceType: /(\w+).*(?<!["]){(?!["])/,
     
     /*
         table "users" { }  => Match "users"
@@ -14,7 +14,7 @@ export const HCL_REGEX = {
     /*
         type = int  => Match "type"
     */
-    attributeType: /^\s*(\w+)\s*\=/g,
+    attributeType: /^\s*(\w+)\s*=/g,
     
     /*
         table.users.column.id  => Match "table", "users", "column" , reference Path Pattern
@@ -39,7 +39,9 @@ type Resource = {
 }
 
 export const enum Direction {
+    // eslint-disable-next-line no-unused-vars
     up = "up",
+    // eslint-disable-next-line no-unused-vars
     down = "down"
 }
 
@@ -90,8 +92,8 @@ class HclParser {
         }
     */
     parentResource(position : monaco.Position): Resource {
-        let lineNumber = this.findParentBracket(PairCurlyBracket, position, 1, Direction.up)
-        let resource = this.findResourceAtLineNumber(lineNumber)
+        const lineNumber = this.findParentBracket(PairCurlyBracket, position, 1, Direction.up)
+        const resource = this.findResourceAtLineNumber(lineNumber)
 
         return resource
     }
@@ -110,13 +112,13 @@ class HclParser {
     */
 
     parentResources() {
-        let resources : Resource[] = []
+        const resources : Resource[] = []
         let parentResource = this.parentResource(this.position)
         
         while (parentResource != null) {
             resources.push(parentResource)
             
-            let parentPosition = new monaco.Position(parentResource.lineNumber, this.position.column);    
+            const parentPosition = new monaco.Position(parentResource.lineNumber, this.position.column);    
             parentResource = this.parentResource(parentPosition)
         }
         
@@ -132,7 +134,7 @@ class HclParser {
 
     findParentBracket(
         pairBracket: Bracket = PairCurlyBracket, position: monaco.Position = null, 
-        level : number = 1, direction: Direction = Direction.up) : number {
+        level  = 1, direction: Direction = Direction.up) : number {
         if (position == null) return
         let lineNumber = position.lineNumber
 
@@ -169,15 +171,15 @@ class HclParser {
     */
     
     listBlockScope() : string[] {
-        let scopes : string[] = []
-        let resources = this.parentResources()
+        const scopes : string[] = []
+        const resources = this.parentResources()
 
         resources.forEach((resource) => {
             scopes.push(resource.resource)
         })
 
         let attributeType;
-        let lineContent = this.textModel.getLineContent(this.position.lineNumber)
+        const lineContent = this.textModel.getLineContent(this.position.lineNumber)
         while ((attributeType = HCL_REGEX.attributeType.exec(lineContent)) !== null) {
             scopes.push(attributeType[1])
         }
@@ -195,8 +197,8 @@ class HclParser {
     */
 
     findResourceAtLineNumber(lineNumber : number) : Resource {
-        let resourceType = this.textModel.getLineContent(lineNumber)?.match(HCL_REGEX.resourceType);
-        let resourceValues : string[] = []
+        const resourceType = this.textModel.getLineContent(lineNumber)?.match(HCL_REGEX.resourceType);
+        const resourceValues : string[] = []
         
         if (resourceType == null) return
 
@@ -221,7 +223,7 @@ class HclParser {
     */
 
     parseCurrentWordToPath() : string[] {
-        let path : string[] = []
+        const path : string[] = []
         let match;
 
         while ((match = HCL_REGEX.path.exec(this.textModel.getLineContent(this.position.lineNumber))) !== null) {
@@ -233,7 +235,7 @@ class HclParser {
 
     
     fillMissingPath(path : string[]) : string[] {
-        let resources = this.parentResources()
+        const resources = this.parentResources()
         let fullPath : string[] = []
 
 
@@ -282,7 +284,7 @@ class HclParser {
     */
 
     findReferencedResourceValues(path : string[]) : string[] {
-        let fullPath = this.fillMissingPath(path)
+        const fullPath = this.fillMissingPath(path)
         let referencedResourceValues : monaco.editor.FindMatch[] = []
         
         let currentRange: monaco.IRange = {
@@ -294,7 +296,7 @@ class HclParser {
         
         fullPath?.forEach((v, k) => {
             if ((k + 1) % 2 === 1) {
-                let matches = this.textModel.findMatches(
+                const matches = this.textModel.findMatches(
                     HCL_REGEX_FUNC.resourceValuebyType(v), currentRange, true, false, null, true);
                 referencedResourceValues.push(...matches)
             } else {
@@ -304,7 +306,7 @@ class HclParser {
                 })
 
                 if (referencedResourceValues[0] != null) {
-                    let positonAtRegexMatch = new monaco.Position(
+                    const positonAtRegexMatch = new monaco.Position(
                         referencedResourceValues[0].range.startLineNumber, 
                         referencedResourceValues[0].range.endColumn);
 
@@ -321,7 +323,7 @@ class HclParser {
 
         let values : string[] = []
         referencedResourceValues?.forEach((referencedResourceValue) => {
-            let resource = this.findResourceAtLineNumber(referencedResourceValue.range.startLineNumber);
+            const resource = this.findResourceAtLineNumber(referencedResourceValue.range.startLineNumber);
             values = [...values, ...resource.values]
         })
 

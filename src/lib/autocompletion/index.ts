@@ -5,9 +5,9 @@ import { decrementingCursorPosition } from "./util";
 import HclParser from './hclparser';
 
 class CodeCompletion {
-	private hclTmpl: Object;
+	private hclTmpl: any;
 
-    constructor(dialect : Dialect, hclTmpl : Object = sql) {
+    constructor(dialect : Dialect, hclTmpl : any = sql) {
 		this.hclTmpl = hclTmpl[dialect]
 
 	}
@@ -23,20 +23,20 @@ class CodeCompletion {
 				position : monaco.Position,
 				context : monaco.languages.CompletionContext) : monaco.languages.ProviderResult<monaco.languages.CompletionList> {
 
-				let hclParser = new HclParser(textModel, position)
-				let range = hclParser.getWordRange()
-				let resources = hclParser.listBlockScope()
+				const hclParser = new HclParser(textModel, position)
+				const range = hclParser.getWordRange()
+				const resources = hclParser.listBlockScope()
 				
 				if((context.triggerKind == 1 && context.triggerCharacter == ".")) {
-					let path = hclParser.parseCurrentWordToPath()
-					let referencedResourceValues = hclParser.findReferencedResourceValues(path)
-					let completionItems = globalCompletionItems(referencedResourceValues)		
+					const path = hclParser.parseCurrentWordToPath()
+					const referencedResourceValues = hclParser.findReferencedResourceValues(path)
+					const completionItems = globalCompletionItems(referencedResourceValues)		
 								
 					return {
 						suggestions: completionItems.filter((completionItem : any) => {
 							return completionItem(range, resources) != null
 						}).map((completionItem : any) => {
-							 return completionItem(range, resources)
+							return completionItem(range, resources)
 						}),
 					}
 				}
@@ -45,22 +45,22 @@ class CodeCompletion {
 					suggestions: completionItems.filter((completionItem) => {
 						return completionItem(range, resources) != null
 					}).map((completionItem) => {
-						 return completionItem(range, resources)
+						return completionItem(range, resources)
 					}),
 				};
 			},
 		}
 	}
 
-	buildCompletionItems(scopes : string[] = [], hclTmpl : Object = null) : any[] {
-		let completionItems : any[] = []
+	buildCompletionItems(scopes : string[] = [], hclTmpl : any = null) : any[] {
+		const completionItems : any[] = []
 
 		if (hclTmpl == null) {
 			hclTmpl= this.hclTmpl
 		}
 
 		Object.entries(hclTmpl).forEach(([key, value]) => {	
-			let definedScopes = [...scopes]
+			const definedScopes = [...scopes]
 
 			scopes.push(key)
 			
@@ -89,11 +89,12 @@ class CodeCompletion {
 					this.buildAttrDefaultCompletionTemplate(range, key) : null
 				})
 
-				let valueDefinedScopes = [...scopes]
-				Object.entries(value).forEach(([k, v]) => {
+				const valueDefinedScopes = [...scopes]
+				
+				Object.entries(value).forEach(([idx]) => {
 					completionItems.push((range : monaco.IRange, resources: string[]) => { 
 						return this.isValidScope(resources, valueDefinedScopes) ?
-						this.buildValueCompletionTemplate(range, v as string) : null
+						this.buildValueCompletionTemplate(range, value[idx]) : null
 					})
 				})
 			}
@@ -102,7 +103,7 @@ class CodeCompletion {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
 					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrValueCompletionTemplate(range, key, value) : null
+					this.buildAttrValueCompletionTemplate(range, key, value as string) : null
 				})
 			}
 
@@ -117,10 +118,10 @@ class CodeCompletion {
 
 	buildGlobalSearchCompletionItems() : any {
 		return (referencedValue : string[]) => {
-			let completionItems : any[] = []
+			const completionItems : any[] = []
 
 			referencedValue.forEach((v) => {
-				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
+				completionItems.push((range : monaco.IRange) => { 
 					return this.buildReferenceCompletionTemplate(range, v)
 				})
 			})

@@ -1,4 +1,4 @@
-import AtlasHcl, {AutoRegisterToMonaco} from "../lib";
+import { AutoRegisterToMonaco } from "../lib";
 import { Dialect, getDialectKeyPair } from "../lib/dialect";
 import "./index.css";
 import * as monaco from 'monaco-editor';
@@ -19,8 +19,9 @@ const { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.sql)
 
 // On change Dialect
 select.addEventListener('change', event => {
-    registerCompletionItemProvider(event?.target?.value)
-    console.log(`Selected value: ${event?.target?.value}`);
+    const target = event.target as HTMLInputElement
+    registerCompletionItemProvider(target.value as Dialect)
+    console.log(`Selected value: ${target.value}`);
 });
 
 // Generate UI
@@ -29,7 +30,7 @@ div.id = "editorContainer"
 
 document.body.appendChild(div);
 
-const editor = monaco.editor.create(document.getElementById("editorContainer") as HTMLElement, {
+monaco.editor.create(document.getElementById("editorContainer") as HTMLElement, {
     theme: 'vs',
     language: 'atlashcl',
     value: "# Hello\n",

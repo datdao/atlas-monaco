@@ -91,7 +91,7 @@ describe('autocompletion', () => {
             const completionItems = codeCompletion.buildGlobalSearchCompletionItems()(["users"])
 
             const result : any = []
-            for (let completionItem of completionItems) {
+            for (const completionItem of completionItems) {
                 result.push(completionItem())
             }
             expect(result).toEqual([codeCompletion.buildReferenceCompletionTemplate(null as any, "users")])
@@ -102,7 +102,7 @@ describe('autocompletion', () => {
             const completionItems = codeCompletion.buildGlobalSearchCompletionItems()(["users", "orders"])
 
             const result : any = []
-            for (let completionItem of completionItems) {
+            for (const completionItem of completionItems) {
                 result.push(completionItem())
             }
             expect(result).toEqual([

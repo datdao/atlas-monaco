@@ -64,7 +64,7 @@ const textModel = {
             const lineNumber = i+1
 
             let match 
-            let regex =  new RegExp(regexS, "gm")
+            const regex =  new RegExp(regexS, "gm")
             while ((match = regex.exec(line)) !== null) {
                 if (lineNumber <= range.endLineNumber && lineNumber >= range.startLineNumber) {
                     matches.push({
