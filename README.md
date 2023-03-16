@@ -101,12 +101,12 @@ Use ${?} to auto set position
 
 Standard datatypes:
 ```ts
-    bool: ["true", "false"],
-    number: "${?}",
-    string: "\"${?}\"",
-    array: "[${?}]",
-    switch: ["on", "off"],
-    ref: "${?}",
+bool: ["true", "false"],
+number: "${?}",
+string: "\"${?}\"",
+array: "[${?}]",
+switch: ["on", "off"],
+ref: "${?}",
 ```
 
 Example for config
