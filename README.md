@@ -36,7 +36,7 @@ npm install atlas-monaco
 
 ## Usage
 
-### Auto Register AtlasHcl
+### Auto Register AtlasHCL
 
 ```ts
 import { AutoRegisterToMonaco } from "../lib";
@@ -48,7 +48,7 @@ AutoRegisterToMonaco(Dialect.sql)
 
 By using the AutoRegisterToMonaco() function, all configurations will be registered, including tokens, extensions, and completion providers.
 
-### Manual Register AtlasHcl
+### Manual Register AtlasHCL
 
 ```ts
 
@@ -96,7 +96,7 @@ The configuration file is located at data/sql.ts. Follow these steps to configur
 - Use an object with key-value pairs to define a resource.
 - Use a string with Attribute + Value to define a simple completion item.
 - Use an array with Attribute + Value to define a completion item that supports multiple options.
-- Use ${0|1|2|3} to define the position of the pointer after rendering. You can set priority by numbering the options.
+- Use ${0|1|2|3} to define the position of the pointer after rendering. You can set priority by numbering the options. Use ${?} to auto set position
 
 ```ts
 
