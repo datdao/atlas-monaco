@@ -1,0 +1,18 @@
+name: ESLint and Jest on PR to master
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm  install
+      - name: Testing
+        run: npm run test
+      - name: Linting
+        run: npx eslint .
