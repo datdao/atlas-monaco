@@ -35,7 +35,7 @@ describe('autocompletion', () => {
         expect(codeConpletion.buildAttrDefaultCompletionTemplate(null as any, "table")).toEqual({
             label: "table",
 			kind: 4,
-            insertText: 'table = "${1}"\n${0}',
+            insertText: 'table = ',
 			insertTextRules: 4,
 			range: null,
         })
@@ -47,7 +47,7 @@ describe('autocompletion', () => {
         expect(codeConpletion.buildAttrValueCompletionTemplate(null as any, "type", "int")).toEqual({
             label: "type",
 			kind: 4,
-            insertText: 'type = int',
+            insertText: 'type = int\n${0}',
 			insertTextRules: 4,
 			range: null,
         })
@@ -161,8 +161,8 @@ describe('autocompletion', () => {
                 
             }
             expect(result).toEqual([
-                codeCompletion.buildAttrDefaultCompletionTemplate(null as any, "comment"),
-                codeCompletion.buildAttrValueCompletionTemplate(null as any, "type", ""),
+                codeCompletion.buildAttrValueCompletionTemplate(null as any, "comment", "\"${0}\""),
+                codeCompletion.buildAttrDefaultCompletionTemplate(null as any, "type"),
             ])
         })
 
@@ -257,8 +257,8 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "comment"),
-                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "type", "")
+                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "comment", "\"${0}\""),
+                    codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "type")
                 ]  
             } 
             )
@@ -283,9 +283,9 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "comment"),
+                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "comment", "\"${0}\""),
                     codeCompletion.buildAttrValueCompletionTemplate(range as any, "columns", "[${0}]"),
-                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "unique", ""),
+                    codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "unique"),
                     codeCompletion.buildResourceCompletionTemplate(range as any, "on")
                 ]  
             } 

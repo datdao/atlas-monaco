@@ -1,6 +1,7 @@
 import * as monaco from 'monaco-editor';
-import { sql } from '../data/sql';
+import sql from '../data/sql';
 import { Dialect } from "../dialect";
+import { decrementingCursorPosition } from "./util";
 import HclParser from './hclparser';
 
 class CodeCompletion {
@@ -85,7 +86,7 @@ class CodeCompletion {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
 					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrValueCompletionTemplate(range, key, "") : null
+					this.buildAttrDefaultCompletionTemplate(range, key) : null
 				})
 
 				let valueDefinedScopes = [...scopes]
@@ -95,17 +96,13 @@ class CodeCompletion {
 						this.buildValueCompletionTemplate(range, v as string) : null
 					})
 				})
-			} else if (Object.prototype.toString.call(value) === '[object String]' && value != "") {
+			}
+			
+			if (Object.prototype.toString.call(value) === '[object String]') {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
 					return this.isValidScope(scopes, definedScopes) ? 
 					this.buildAttrValueCompletionTemplate(range, key, value) : null
-				})
-			} else {
-				// Push Attribute completion Items
-				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
-					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrDefaultCompletionTemplate(range, key) : null
 				})
 			}
 
@@ -138,7 +135,7 @@ class CodeCompletion {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Method,
 			detail: "",
-			insertText: key + ' "${1}" {\n\t${0}\n}',
+			insertText: decrementingCursorPosition(key + ' "${?}" {\n\t${?}\n}'),
 			insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 			range: range,
 		}
@@ -149,7 +146,7 @@ class CodeCompletion {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Method,
-			insertText: key,
+			insertText: decrementingCursorPosition(key),
 			insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 			range: range,
 		}
@@ -160,7 +157,7 @@ class CodeCompletion {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Variable,
-			insertText: key + ' = "${1}"\n${0}',
+			insertText: decrementingCursorPosition(key + ' = '),
 			insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 			range: range,
 		}
@@ -171,7 +168,7 @@ class CodeCompletion {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Variable,
-			insertText: key + ' = ' + value,
+			insertText: decrementingCursorPosition(key + " = " + value + "\n${?}"),
 			insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 			range: range,
 		}
@@ -180,9 +177,9 @@ class CodeCompletion {
 	// Value template
 	buildValueCompletionTemplate(range : monaco.IRange, key : string) {
 		return {
-			label: key,
+			label: key.replace(/\$\{\S\}/g, "?"),
 			kind: monaco.languages.CompletionItemKind.Variable,
-			insertText: key + '\n${0}',
+			insertText: decrementingCursorPosition(key + '\n${?}'),
 			insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 			range: range,
 		}
@@ -200,6 +197,8 @@ class CodeCompletion {
 		}
 		return true
 	}
+
+	
 }
 
 export default CodeCompletion

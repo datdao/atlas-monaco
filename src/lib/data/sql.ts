@@ -1,146 +1,167 @@
-export const sql = {
+export const dataType = {
+    bool: ["true", "false"],
+    actions: [
+        "NO_ACTION",
+        "RESTRICT",
+        "CASCADE",
+        "SET_NULL",
+        "DEFAULT"
+    ],
+    number: "${?}",
+    string: "\"${?}\"",
+    array: "[${?}]",
+    index: [
+        "BTREE",
+        "HASH",
+        "FULLTEXT",
+        "SPATIAL"
+    ],
+    switch: ["on", "off"],
+    ref: "${?}",
+    func: function(name: string, params : any = []) {
+        return name + "(" + params.join(", ") + ")"
+    }
+}
+
+export default {
     mysql: {
         schema: {
-            charset: "",
-            collate: "",
-            comment: ""
+            charset: dataType.string,
+            collate: dataType.string,
+            comment: dataType.string
         },
 
         table: {
-            schema: "",
-            charset: "",
-            collate: "",
-            comment: "",
+            schema: dataType.string,
+            charset: dataType.string,
+            collate: dataType.string,
+            comment: dataType.string,
             primary_key: {
-                columns: "[${0}]"
-            },
-            index: {
-                comment: "",
                 type: [
                     "BTREE",
                     "HASH",
                     "FULLTEXT",
                     "SPATIAL"
                 ],
-                columns: "[${0}]",
-                unique: ["true","false"],
+                columns: dataType.array
+            },
+            index: {
+                comment: dataType.string,
+                type: dataType.index,
+                columns: dataType.array,
+                unique: dataType.bool,
                 on: {
-                    column: "",
-                    desc: "true",
-                    where: "",
-                    prefix: ""
-                }
+                    column: dataType.string,
+                    desc: dataType.bool,
+                    where: dataType.string,
+                    prefix: dataType.number
+                },
             },
             foreign_key: {
-                columns: "[${0}]",
-                ref_columns: "[${0}]",
-                on_delete: [
-                    "NO_ACTION",
-                    "RESTRICT",
-                    "CASCADE",
-                    "SET_NULL",
-                    "DEFAULT"
-                ],
-                on_update: [
-                    "NO_ACTION",
-                    "RESTRICT",
-                    "CASCADE",
-                    "SET_NULL",
-                    "DEFAULT"
-                ]
+                columns: dataType.array,
+                ref_columns: dataType.array,
+                on_delete: dataType.actions,
+                on_update: dataType.actions
             },
             column: {
-                auto_increment: ["true","false"],
-                comment: "",
+                as: {
+                    type: ["STORED", "PERSISTENT", "VIRTUAL"]
+                },
+                auto_increment: dataType.bool,
+                comment: dataType.string,
                 type: [
-                    "bit",
-                    "binary",
-                    "blob",
+                    "bool",
                     "boolean",
-                    "time",
-                    "timestamp",
-                    "date",
-                    "datetime",
-                    "year",
-                    "decimal",
-                    "numeric",
-                    "float",
-                    "double",
-                    "enum",
+                    "bit",
+                    dataType.func("bit", [dataType.number]),
                     "int",
                     "tinyint",
-                    "smallint",
+                    "smaillint",
                     "mediumint",
-                    "bigint",
-                    "json",
-                    "set",
+                    "bitint",
+                    "decimal",
+                    dataType.func("decimal", [dataType.number]),
+                    dataType.func("decimal", [dataType.number, dataType.number]),
+                    "numberic",
+                    "float",
+                    "double",
+                    "real",
+                    "timestamp",
+                    dataType.func("timestamp", [dataType.number]),
+                    "date",
+                    "time",
+                    dataType.func("time", [dataType.number]),
+                    "datetime",
+                    dataType.func("datetime", [dataType.number]),
+                    "year",
                     "varchar",
                     "char",
+                    "varbinary",
+                    dataType.func("varbinary", [dataType.number]),
+                    "binary",
+                    dataType.func("binary", [dataType.number]),
+                    "blob",
+                    "tinyblob",
+                    "mediumblocb",
+                    "longblob",
+                    "json",
+                    "text",
                     "tinytext",
                     "mediumtext",
-                    "text",
                     "longtext",
                     "geometry",
                     "point",
+                    "mutipoint",
+                    "linestring",
                     "multipoint",
-                    "linestring"
-                ]
-            }
+                    "polygon",
+                    "multipolygon",
+                    "geometrycollection"
+                ],
+                on_update: dataType.string,
+            },
+            check: {
+                enforced: dataType.bool,
+            },
+            auto_increment: dataType.number
         }
     },
     sql: {
         schema: {
-            charset: "",
-            collate: "",
-            comment: ""
+            charset: dataType.string,
+            collate: dataType.string,
+            comment: dataType.string
         },
 
         table: {
-            schema: "",
-            charset: "",
-            collate: "",
-            comment: "",
+            schema: dataType.string,
+            charset: dataType.string,
+            collate: dataType.string,
+            comment: dataType.string,
             primary_key: {
-                columns: "[${0}]"
+                columns: dataType.array
             },
             index: {
-                comment: "",
-                type: [
-                    "BTREE",
-                    "HASH",
-                    "FULLTEXT",
-                    "SPATIAL"
-                ],
-                columns: "[${0}]",
-                unique: ["true","false"],
+                comment: dataType.string,
+                type: dataType.index,
+                columns: dataType.array,
+                unique: dataType.bool,
                 on: {
-                    column: "",
+                    column: dataType.string,
                     desc: "true",
-                    where: "",
-                    prefix: ""
+                    where: dataType.string,
+                    prefix: dataType.string
                 }
             },
             foreign_key: {
-                columns: "[${0}]",
-                ref_columns: "[${0}]",
-                on_delete: [
-                    "NO_ACTION",
-                    "RESTRICT",
-                    "CASCADE",
-                    "SET_NULL",
-                    "DEFAULT"
-                ],
-                on_update: [
-                    "NO_ACTION",
-                    "RESTRICT",
-                    "CASCADE",
-                    "SET_NULL",
-                    "DEFAULT"
-                ]
+                columns: dataType.array,
+                ref_columns: dataType.array,
+                on_delete: dataType.actions,
+                on_update: dataType.actions
             },
             column: {
-                auto_increment: ["true","false"],
-                comment: "",
+                auto_increment: dataType.bool,
+                comment: dataType.string,
                 type: [
                     "blob",
                     "int",
@@ -158,84 +179,74 @@ export const sql = {
     },
     postgresql: {
         schema: {
-            comment: "",
+            comment: dataType.string,
         },
 
         enum: {
-            schema: [""],
-            values: ["on", "off"]
+            schema: dataType.number,
+            values: dataType.switch
         },
 
         table: {
-            schema: "",
-            comment: "",
+            schema: dataType.string,
+            comment: dataType.string,
            
             primary_key: {
-                columns: "[${0}]"
+                columns: dataType.array
             },
             index: {
-                comment: "",
+                comment: dataType.string,
                 type: [
                     "BTREE",
+                    "BRIN",
                     "HASH",
-                    "FULLTEXT",
-                    "SPATIAL"
+                    "GIN",
+                    "GiST",
+                    "SPGiST"
                 ],
-                columns: "[${0}]",
-                unique: ["true","false"],
+                columns: dataType.array,
+                unique: dataType.bool,
                 on: {
-                    column: "",
-                    desc: "true",
-                    where: "",
-                    prefix: ""
+                    column: dataType.string,
+                    desc: dataType.bool,
+                    where: dataType.string,
+                    prefix: dataType.string
                 }
             },
             foreign_key: {
-                columns: "[${0}]",
-                ref_columns: "[${0}]",
-                on_delete: [
-                    "NO_ACTION",
-                    "RESTRICT",
-                    "CASCADE",
-                    "SET_NULL",
-                    "DEFAULT"
-                ],
-                on_update: [
-                    "NO_ACTION",
-                    "RESTRICT",
-                    "CASCADE",
-                    "SET_NULL",
-                    "DEFAULT"
-                ]
+                columns: dataType.array,
+                ref_columns: dataType.array,
+                on_delete: dataType.actions,
+                on_update: dataType.actions
             },
             column: {
-                auto_increment: ["true","false"],
-                collate: "",
-                comment: "",
+                auto_increment: dataType.bool,
+                collate: dataType.string,
+                comment: dataType.string,
                 indentify: {
-                    generated: ["ALWAYS"],
-                    start: [""],
-                    increment: [""]
+                    generated: ["ALWAYS", "BY_DEFAULT"],
+                    start: dataType.number,
+                    increment: dataType.number
                 },
                 type: [
-                    "sql(\"${1}\")",
+                    dataType.func("sql", [dataType.string]),
                     "bit",
                     "bit_varying",
-                    "bit_varying(${1})",
+                    dataType.func("big_varying", [dataType.number]),
                     "boolean",
                     "bytea",
                     "date",
                     "time",
                     "timetz",
                     "timestamptz",
-                    "timestamp(\"${1:test}\")",
+                    dataType.func("timestamp", [dataType.string]),
                     "interval",
                     "numberic",
-                    "numberic(${1})",
-                    "numberic(${2},${3})",
+                    dataType.func("numberic", [dataType.number]),
+                    dataType.func("numberic", [dataType.number, dataType.number]),
                     "real",
                     "double_precision",
-                    "float(${1})",
+                    dataType.func("float", [dataType.number]),
                     "circle",
                     "line",
                     "lseg",
@@ -270,25 +281,25 @@ export const sql = {
                     "serial",
                     "bigserial",
                     "varchar",
-                    "varchar(\"${1}\")",
+                    dataType.func("varchar", [dataType.string]),
                     "char",
-                    "char(\"${1}\")",
+                    dataType.func("char", [dataType.string]),
                     "text",
                     "tsvector",
                     "tsquery",
                     "uuid",
                     "xml",
-
+                    "hstore",
+                    "sql"
                 ],
-                "default": [""]
+                "default": dataType.number
             },
             partition: {
-                type: ["RANGE"],
-                columns: "[${0}]",
+                type: ["RANGE", "LIST", "HASH"],
+                columns: dataType.array,
                 by: {
-                    column: [""],
-                    expr: "",
-
+                    column: dataType.ref,
+                    expr: dataType.string,
                 }
             }
         }

@@ -1,8 +1,7 @@
 import HclParser, * as hclParser from '../../autocompletion/hclparser';
 import * as regexdata from './testdata/regex';
 import * as modeldata from './testdata/model';
-import * as monaco from 'monaco-editor';
-import { parse } from '@babel/core';
+
 
 
 it('Runs without crashing', () => {});

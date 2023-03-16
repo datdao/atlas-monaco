@@ -1,20 +1,20 @@
 export const sql = {
     sql: {
         schema: {
-            charset: "",
+            charset: "\"${0}\"",
         },
 
         table: {
             index: {
-                comment: "",
+                comment: "\"${0}\"",
                 columns: "[${0}]",
                 unique: ["true","false"],
                 on: {
-                    column: "",
+                    column: "\"${0}\"",
                 }
             },
             column: {
-                comment: "",
+                comment: "\"${0}\"",
                 type: [
                     "bit",
                     "binary",
