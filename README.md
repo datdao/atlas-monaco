@@ -99,29 +99,42 @@ The configuration file is located at data/sql.ts. Follow these steps to configur
 - Use ${0|1|2|3} to define the position of the pointer after rendering. You can set priority by numbering the options. 
 Use ${?} to auto set position
 
+Standard datatypes:
+```ts
+    bool: ["true", "false"],
+    number: "${?}",
+    string: "\"${?}\"",
+    array: "[${?}]",
+    switch: ["on", "off"],
+    ref: "${?}",
+```
+
+Example for config
 ```ts
 
 mysql: {
         schema: {
-            charset: "",
-            collate: "",
-            comment: ""
+            charset: dataType.string,
         },
 
         table: {
-            schema: "",
-            charset: "",
-            collate: "",
-            comment: "",
+            schema: dataType.string,
             primary_key: {
-                columns: "[${0}]"
-            },
-            index: {
-                comment: "",
                 type: [
                     "BTREE",
-                    "HASH",
-                    "FULLTEXT",
+                    ...
+                ],
+                columns: dataType.array
+            },
+            index: {
+                comment: dataType.string,
+                type: dataType.index,
+                columns: dataType.array,
+                unique: dataType.bool,
+                on: {
+                    column: dataType.string,
+                    desc: dataType.bool,
+                    where: dataType.string,
                     ...
 
 ```
