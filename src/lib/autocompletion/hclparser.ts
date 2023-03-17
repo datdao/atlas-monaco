@@ -96,7 +96,7 @@ class HclParser {
             }
         }
     */
-    parentResource(position : monaco.Position): Resource {
+    findParentResource(position : monaco.Position): Resource {
         const lineNumber = this.findParentBracket(PairCurlyBracket, position, 1, Direction.up)
         const resource = this.findResourceAtLineNumber(lineNumber)
 
@@ -116,15 +116,15 @@ class HclParser {
         }
     */
 
-    parentResources() {
+    findParentResources() {
         const resources : Resource[] = []
-        let parentResource = this.parentResource(this.position)
+        let parentResource = this.findParentResource(this.position)
         
         while (parentResource != null) {
             resources.push(parentResource)
             
             const parentPosition = new monaco.Position(parentResource.lineNumber, this.position.column);    
-            parentResource = this.parentResource(parentPosition)
+            parentResource = this.findParentResource(parentPosition)
         }
         
         return resources.reverse()
@@ -177,7 +177,7 @@ class HclParser {
     
     listScopes() : string[] {
         const scopes : string[] = []
-        const resources = this.parentResources()
+        const resources = this.findParentResources()
 
         resources.forEach((resource) => {
             scopes.push(resource.resource)

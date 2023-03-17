@@ -9,12 +9,11 @@ class CodeCompletion {
 
     constructor(dialect : Dialect, hclTmpl : any = sql) {
 		this.hclTmpl = hclTmpl[dialect]
-
 	}
 
-	items(): monaco.languages.CompletionItemProvider {
-		const completionItems = this.buildCompletionItems()
-		const globalCompletionItems = this.buildGlobalSearchCompletionItems()
+	getProvider(): monaco.languages.CompletionItemProvider {
+		const completionItems = this.buildItems()
+		const globalCompletionItems = this.buildGlobalSearchItems()
 		const rootResources = Object.keys(this.hclTmpl)
 
 		return {
@@ -30,7 +29,7 @@ class CodeCompletion {
 				
 				
 				if((context.triggerKind == 1 && context.triggerCharacter == ".")) {
-					const resources = hclParser.parentResources()
+					const resources = hclParser.findParentResources()
 					let path = hclParser.parseCurrentWordToPath()
 
 					// correct relative path
@@ -61,7 +60,7 @@ class CodeCompletion {
 		}
 	}
 
-	buildCompletionItems(scopes : string[] = [], hclTmpl : any = null) : any[] {
+	buildItems(scopes : string[] = [], hclTmpl : any = null) : any[] {
 		const completionItems : any[] = []
 
 		if (hclTmpl == null) {
@@ -78,12 +77,12 @@ class CodeCompletion {
 				// Push Resource completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => {
 					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildResourceCompletionTemplate(range, key, resourceConfig[[...scopes,key].join(".")]) : undefined
+					this.buildResourceTemplate(key, range, resourceConfig[[...scopes,key].join(".")]) : undefined
 				})
 
 				
 				// [IMPORTANT] trigger recursion
-				completionItems.push(...this.buildCompletionItems([...scopes], value))
+				completionItems.push(...this.buildItems([...scopes], value))
 				
 				scopes = scopes.filter((item) => item !== key)
 
@@ -95,7 +94,7 @@ class CodeCompletion {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
 					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrDefaultCompletionTemplate(range, key) : null
+					this.buildAttrDefaultTemplate(key, range) : null
 				})
 
 				const valueDefinedScopes = [...scopes]
@@ -103,7 +102,7 @@ class CodeCompletion {
 				Object.entries(value).forEach(([idx]) => {
 					completionItems.push((range : monaco.IRange, resources: string[]) => { 
 						return this.isValidScope(resources, valueDefinedScopes) ?
-						this.buildValueCompletionTemplate(range, value[idx]) : null
+						this.buildValueTemplate(value[idx], range) : null
 					})
 				})
 			}
@@ -112,7 +111,7 @@ class CodeCompletion {
 				// Push Attribute completion Items
 				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
 					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrValueCompletionTemplate(range, key, value as string) : null
+					this.buildAttrValueTemplate(key, value as string, range) : null
 				})
 			}
 
@@ -125,13 +124,13 @@ class CodeCompletion {
 		return completionItems
 	}
 
-	buildGlobalSearchCompletionItems() : any {
-		return (referencedValue : string[]) => {
+	buildGlobalSearchItems() : any {
+		return (referencedValues : string[]) => {
 			const completionItems : any[] = []
 
-			referencedValue.forEach((v) => {
+			referencedValues.forEach((referencedValue) => {
 				completionItems.push((range : monaco.IRange) => { 
-					return this.buildReferenceCompletionTemplate(range, v)
+					return this.buildReferenceTemplate(referencedValue, range)
 				})
 			})
 
@@ -140,7 +139,7 @@ class CodeCompletion {
 	}
 
 	// Resource template
-	buildResourceCompletionTemplate(range : monaco.IRange, key : string, config: any = null) {
+	buildResourceTemplate(key : string, range : monaco.IRange = null, config: any = null) {
 		const name = (config?.allowNullName ? '' : '"${?}"')
 		return {
 			label: key,
@@ -152,8 +151,8 @@ class CodeCompletion {
 		}
 	}
 
-	// Resource template
-	buildReferenceCompletionTemplate(range : monaco.IRange = null, key : string) {
+	// Build Resource template
+	buildReferenceTemplate(key : string, range : monaco.IRange = null) {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Method,
@@ -163,8 +162,8 @@ class CodeCompletion {
 		}
 	}
 
-	// Attribute template
-	buildAttrDefaultCompletionTemplate(range : monaco.IRange, key : string) {
+	// Build attribute template
+	buildAttrDefaultTemplate(key : string, range : monaco.IRange = null) {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Variable,
@@ -174,8 +173,8 @@ class CodeCompletion {
 		}
 	}
 
-	// Attribute template
-	buildAttrValueCompletionTemplate(range : monaco.IRange, key : string, value: string) {
+	// Build Template with attribute and value
+	buildAttrValueTemplate(key : string, value: string, range : monaco.IRange = null) {
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Variable,
@@ -186,7 +185,7 @@ class CodeCompletion {
 	}
 
 	// Value template
-	buildValueCompletionTemplate(range : monaco.IRange, key : string) {
+	buildValueTemplate(key : string, range : monaco.IRange = null) {
 		return {
 			label: key.replace(/\$\{\S\}/g, "?"),
 			kind: monaco.languages.CompletionItemKind.Variable,

@@ -3,7 +3,7 @@ import { defaultConfig } from "../config"
 import { Dialect } from "../dialect"
 
 const codeCompletionMock = {
-    items: jest.fn(()=>{
+    getProvider: jest.fn(()=>{
         return {
             triggerCharacters: ["."],
             provideCompletionItems: jest.fn(),
@@ -44,6 +44,6 @@ describe('atlashcl', () => {
     test('new atlas with custom code completion', () => {
         const atlashcl = new AtlasHcl(Dialect.mysql, defaultConfig as any, codeCompletionMock)
         atlashcl.getCompletionProvider()
-        expect(codeCompletionMock.items).toBeCalled
+        expect(codeCompletionMock.getProvider).toBeCalled
     })
 })

@@ -4,10 +4,10 @@ import { sql } from "./testdata/hcltmpl"
 import { textModel } from "./testdata/model"
 
 describe('autocompletion', () => {
-    test('buildResourceCompletionTemplate', () => {
+    test('buildResourceTemplate', () => {
         const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
-        expect(codeConpletion.buildResourceCompletionTemplate(null as any, "table")).toEqual({
+        expect(codeConpletion.buildResourceTemplate("table")).toEqual({
             label: "table",
 			kind: 0,
 			detail: "",
@@ -17,10 +17,10 @@ describe('autocompletion', () => {
         })
     })
 
-    test('buildReferenceCompletionTemplate', () => {
+    test('buildReferenceTemplate', () => {
         const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
-        expect(codeConpletion.buildReferenceCompletionTemplate(null as any, "table")).toEqual({
+        expect(codeConpletion.buildReferenceTemplate("table")).toEqual({
             label: "table",
 			kind: 0,
 			insertText: "table",
@@ -29,10 +29,10 @@ describe('autocompletion', () => {
         })
     })
 
-    test('buildAttrDefaultCompletionTemplate', () => {
+    test('buildAttrDefaultTemplate', () => {
         const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
-        expect(codeConpletion.buildAttrDefaultCompletionTemplate(null as any, "table")).toEqual({
+        expect(codeConpletion.buildAttrDefaultTemplate("table")).toEqual({
             label: "table",
 			kind: 4,
             insertText: 'table = ',
@@ -41,10 +41,10 @@ describe('autocompletion', () => {
         })
     })
 
-    test('buildAttrValueCompletionTemplate', () => {
+    test('buildAttrValueTemplate', () => {
         const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
-        expect(codeConpletion.buildAttrValueCompletionTemplate(null as any, "type", "int")).toEqual({
+        expect(codeConpletion.buildAttrValueTemplate("type", "int")).toEqual({
             label: "type",
 			kind: 4,
             insertText: 'type = int\n${0}',
@@ -53,10 +53,10 @@ describe('autocompletion', () => {
         })
     })
 
-    test('buildValueCompletionTemplate', () => {
+    test('buildValueTemplate', () => {
         const codeConpletion = new CodeCompletion(Dialect.sqlite)
 
-        expect(codeConpletion.buildValueCompletionTemplate(null as any, "int")).toEqual({
+        expect(codeConpletion.buildValueTemplate("int")).toEqual({
             label: "int",
 			kind: 4,
             insertText: "int" + '\n${0}',
@@ -88,26 +88,26 @@ describe('autocompletion', () => {
     describe('buildGlobalSearchCompletionItems', () => {
         test('default', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite)
-            const completionItems = codeCompletion.buildGlobalSearchCompletionItems()(["users"])
+            const completionItems = codeCompletion.buildGlobalSearchItems()(["users"])
 
             const result : any = []
             for (const completionItem of completionItems) {
                 result.push(completionItem())
             }
-            expect(result).toEqual([codeCompletion.buildReferenceCompletionTemplate(null as any, "users")])
+            expect(result).toEqual([codeCompletion.buildReferenceTemplate("users")])
         })
 
         test('with 2 values', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite)
-            const completionItems = codeCompletion.buildGlobalSearchCompletionItems()(["users", "orders"])
+            const completionItems = codeCompletion.buildGlobalSearchItems()(["users", "orders"])
 
             const result : any = []
             for (const completionItem of completionItems) {
                 result.push(completionItem())
             }
             expect(result).toEqual([
-                codeCompletion.buildReferenceCompletionTemplate(null as any, "users"),
-                codeCompletion.buildReferenceCompletionTemplate(null as any, "orders")
+                codeCompletion.buildReferenceTemplate("users"),
+                codeCompletion.buildReferenceTemplate("orders")
             ])
         })
     })
@@ -116,7 +116,7 @@ describe('autocompletion', () => {
     describe('buildCompletionItems', () => {
         test('default', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionItems = codeCompletion.buildCompletionItems([], null as any)
+            const completionItems = codeCompletion.buildItems([], null as any)
 
             const result : any = []
             for (let completionItem of completionItems) {
@@ -127,13 +127,13 @@ describe('autocompletion', () => {
                 
             }
             expect(result).toEqual([
-                codeCompletion.buildResourceCompletionTemplate(null as any, "schema"),
-                codeCompletion.buildResourceCompletionTemplate(null as any, "table")])
+                codeCompletion.buildResourceTemplate("schema"),
+                codeCompletion.buildResourceTemplate("table")])
         })
 
         test('lvl1 suggestion', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionItems = codeCompletion.buildCompletionItems([], null as any)
+            const completionItems = codeCompletion.buildItems([], null as any)
 
             const result : any = []
             for (let completionItem of completionItems) {
@@ -144,31 +144,31 @@ describe('autocompletion', () => {
                 
             }
             expect(result).toEqual([
-                codeCompletion.buildResourceCompletionTemplate(null as any, "index"),
-                codeCompletion.buildResourceCompletionTemplate(null as any, "column")])
+                codeCompletion.buildResourceTemplate("index"),
+                codeCompletion.buildResourceTemplate("column")])
         })
 
         test('lvl2 suggestion', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionItems = codeCompletion.buildCompletionItems([], null as any)
+            const completionItems = codeCompletion.buildItems([], null as any)
 
             const result : any = []
             for (let completionItem of completionItems) {
-                completionItem = completionItem(null as any, ["table", "column"])
+                completionItem = completionItem(null as any,["table", "column"])
                 if (completionItem != null) {
                     result.push(completionItem)
                 }
                 
             }
             expect(result).toEqual([
-                codeCompletion.buildAttrValueCompletionTemplate(null as any, "comment", "\"${0}\""),
-                codeCompletion.buildAttrDefaultCompletionTemplate(null as any, "type"),
+                codeCompletion.buildAttrValueTemplate("comment", "\"${0}\""),
+                codeCompletion.buildAttrDefaultTemplate("type"),
             ])
         })
 
         test('lvl2 value suggestion', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionItems = codeCompletion.buildCompletionItems([], null as any)
+            const completionItems = codeCompletion.buildItems([], null as any)
 
             const result : any = []
             for (let completionItem of completionItems) {
@@ -179,15 +179,15 @@ describe('autocompletion', () => {
                 
             }
             expect(result).toEqual([
-                codeCompletion.buildValueCompletionTemplate(null as any, "bit"),
-                codeCompletion.buildValueCompletionTemplate(null as any, "binary")])
+                codeCompletion.buildValueTemplate("bit"),
+                codeCompletion.buildValueTemplate("binary")])
         })
     })
 
     describe('items', () => {
         test('suggestion at root position', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 1,
@@ -204,8 +204,8 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildResourceCompletionTemplate(range as any, "schema"),
-                    codeCompletion.buildResourceCompletionTemplate(range as any, "table")
+                    codeCompletion.buildResourceTemplate("schema", range),
+                    codeCompletion.buildResourceTemplate("table", range)
                 ]  
             } 
             )
@@ -213,7 +213,7 @@ describe('autocompletion', () => {
 
         test('suggestion at lvl1 position', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 4,
@@ -230,8 +230,8 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildResourceCompletionTemplate(range as any, "index"),
-                    codeCompletion.buildResourceCompletionTemplate(range as any, "column")
+                    codeCompletion.buildResourceTemplate("index", range),
+                    codeCompletion.buildResourceTemplate("column", range)
                     
                 ]  
             } 
@@ -240,7 +240,7 @@ describe('autocompletion', () => {
 
         test('suggestion at lvl2 position', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 30,
@@ -257,8 +257,8 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "comment", "\"${0}\""),
-                    codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "type")
+                    codeCompletion.buildAttrValueTemplate("comment", "\"${0}\"", range),
+                    codeCompletion.buildAttrDefaultTemplate("type", range)
                 ]  
             } 
             )
@@ -266,7 +266,7 @@ describe('autocompletion', () => {
 
         test('suggestion at lvl2 position v2', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 35,
@@ -283,10 +283,10 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "comment", "\"${0}\""),
-                    codeCompletion.buildAttrValueCompletionTemplate(range as any, "columns", "[${0}]"),
-                    codeCompletion.buildAttrDefaultCompletionTemplate(range as any, "unique"),
-                    codeCompletion.buildResourceCompletionTemplate(range as any, "on", {allowNullName: true})
+                    codeCompletion.buildAttrValueTemplate("comment", "\"${0}\"", range),
+                    codeCompletion.buildAttrValueTemplate("columns", "[${0}]", range),
+                    codeCompletion.buildAttrDefaultTemplate("unique", range),
+                    codeCompletion.buildResourceTemplate("on", range, {allowNullName: true})
                 ]  
             } 
             )
@@ -294,7 +294,7 @@ describe('autocompletion', () => {
 
         test('suggestion at lvl1 position with value', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 5,
@@ -311,8 +311,8 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildValueCompletionTemplate(range as any, "bit"),
-                    codeCompletion.buildValueCompletionTemplate(range as any, "binary")
+                    codeCompletion.buildValueTemplate("bit", range),
+                    codeCompletion.buildValueTemplate("binary", range)
                 ]  
             } 
             )
@@ -320,7 +320,7 @@ describe('autocompletion', () => {
 
         test('absolute path', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 22,
@@ -337,7 +337,7 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 1, triggerCharacter: "."} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildReferenceCompletionTemplate(range as any, "id")
+                    codeCompletion.buildReferenceTemplate("id", range)
                 ]  
             } 
             )
@@ -345,7 +345,7 @@ describe('autocompletion', () => {
 
         test('relative path', () => {
             const codeCompletion = new CodeCompletion(Dialect.sqlite, sql)
-            const completionProvider = codeCompletion.items()
+            const completionProvider = codeCompletion.getProvider()
 
             const position: any = {
                 lineNumber: 21,
@@ -362,7 +362,7 @@ describe('autocompletion', () => {
                 textModel as any, position, {triggerKind: 1, triggerCharacter: "."} as any, null as any)
             expect(result).toEqual({
                     suggestions: [
-                        codeCompletion.buildReferenceCompletionTemplate(range as any, "owner_id")
+                        codeCompletion.buildReferenceTemplate("owner_id", range)
                     ]  
                 } 
             )

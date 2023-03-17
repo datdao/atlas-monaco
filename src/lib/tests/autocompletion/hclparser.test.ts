@@ -314,7 +314,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.parentResource({lineNumber: 3} as any)
+            const result = parser.findParentResource({lineNumber: 3} as any)
             expect(result).toEqual({
                 resource: "table",
                 values: ["users"],
@@ -327,7 +327,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.parentResource({lineNumber: 5} as any)
+            const result = parser.findParentResource({lineNumber: 5} as any)
             expect(result).toEqual({
                 resource: "column",
                 values: ["id"],
@@ -340,7 +340,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.parentResource({lineNumber: 8} as any)
+            const result = parser.findParentResource({lineNumber: 8} as any)
             expect(result).toEqual({
                 resource: "primary_key",
                 values: [],
@@ -355,7 +355,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            const result = parser.parentResources()
+            const result = parser.findParentResources()
             expect(result).toEqual([
                 {
                     resource: "table",
@@ -370,7 +370,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
-            const result = parser.parentResources()
+            const result = parser.findParentResources()
             expect(result).toEqual([
                 {
                     resource: "table",
@@ -390,7 +390,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
 
-            const result = parser.parentResources()
+            const result = parser.findParentResources()
             expect(result).toEqual([
                 {
                     resource: "table",
@@ -583,7 +583,7 @@ describe('parser', () => {
                     const parser = new HclParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
-                    parser.parentResources()
+                    parser.findParentResources()
                     
                 }
             }

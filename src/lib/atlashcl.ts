@@ -13,7 +13,7 @@ export interface IAtlasHcl {
 }
 
 export interface ICodeCompletion {
-  items() : monaco.languages.CompletionItemProvider
+  getProvider() : monaco.languages.CompletionItemProvider
 }
 
 class AtlasHcl implements IAtlasHcl {
@@ -51,7 +51,7 @@ class AtlasHcl implements IAtlasHcl {
     }
     
     getCompletionProvider(): monaco.languages.CompletionItemProvider {
-      return this.codeCompletion.items()
+      return this.codeCompletion.getProvider()
     }
   }
 
