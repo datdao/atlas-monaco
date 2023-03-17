@@ -406,13 +406,13 @@ describe('parser', () => {
         })
     })
 
-    describe('listBlockScope', () => {
+    describe('listScopes', () => {
         test('position at block level 1', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 2} as any)
 
-            const result = parser.listBlockScope()
+            const result = parser.listScopes()
             expect(result).toEqual([])
         })
 
@@ -421,7 +421,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            const result = parser.listBlockScope()
+            const result = parser.listScopes()
             expect(result).toEqual(["table","schema"])
         })
 
@@ -430,7 +430,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
-            const result = parser.listBlockScope()
+            const result = parser.listScopes()
             expect(result).toEqual(["table", "column", "type"])
         })
     })
@@ -461,35 +461,6 @@ describe('parser', () => {
 
             const result = parser.parseCurrentWordToPath()
             expect(result).toEqual(["column"])
-        })
-    })
-
-    describe('fillMissingPath', () => {
-        test('default', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                {lineNumber: 3} as any)
-
-            const result = parser.fillMissingPath(["schema"])
-            expect(result).toEqual([])
-        })
-
-        test('absolutepath', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                {lineNumber: 22} as any)
-
-            const result = parser.fillMissingPath(["table","users","column"])
-            expect(result).toEqual(["table","users","column"])
-        })
-
-        test('relativepath', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                {lineNumber: 21} as any)
-
-            const result = parser.fillMissingPath(["column"])
-            expect(result).toEqual(["table","orders","column"])
         })
     })
 
@@ -570,7 +541,7 @@ describe('parser', () => {
                 {lineNumber: 5} as any)
             const result = parser.findReferencedResourceValues(["column"])
 
-            expect(result).toEqual(["id"])
+            expect(result).toEqual(["id","owner_id","id"])
         })
 
         test('relative path lvl3', () => {
@@ -579,7 +550,7 @@ describe('parser', () => {
                 {lineNumber: 8} as any)
             const result = parser.findReferencedResourceValues(["column"])
 
-            expect(result).toEqual(["id"])
+            expect(result).toEqual(["id","owner_id","id"])
         })
     })
 

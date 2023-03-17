@@ -175,7 +175,7 @@ class HclParser {
                             │      ◄────────────┘
     */
     
-    listBlockScope() : string[] {
+    listScopes() : string[] {
         const scopes : string[] = []
         const resources = this.parentResources()
 
@@ -239,33 +239,6 @@ class HclParser {
         return path
     }
 
-    
-    fillMissingPath(path : string[]) : string[] {
-        const resources = this.parentResources()
-        let fullPath : string[] = []
-
-
-        if (resources.length > 0 && path.includes(resources[0].resource)) {
-            fullPath = [...fullPath,...path]
-            return fullPath
-        }
-
-        if (resources.length == 1) {
-            fullPath.push(resources[0].resource)   
-            fullPath.push(resources[0].values[0])  
-            return []
-        }
-
-        for (let i = 0; i < resources.length - 1; i++) {
-            fullPath.push(resources[i].resource)   
-            fullPath.push(resources[i].values[0])  
-        }
-
-        return [...fullPath,...path]
-    }
-
-
-
     // 1 = Outer | 2 = Inter | 0 = undefined
     compareRange(src : monaco.IRange, dst : monaco.IRange) : number {
         if (src.startLineNumber <= dst.startLineNumber && src.endLineNumber >= dst.endLineNumber) {
@@ -289,8 +262,7 @@ class HclParser {
                 columns  =  [column.  ──────┘
     */
 
-    findReferencedResourceValues(path : string[]) : string[] {
-        const fullPath = this.fillMissingPath(path)
+    findReferencedResourceValues(path : string[]) : string[] {    
         let referencedResourceValues : monaco.editor.FindMatch[] = []
         
         let currentRange: monaco.IRange = {
@@ -300,7 +272,7 @@ class HclParser {
             endLineNumber: this.textModel.getLineCount()
         }
         
-        fullPath?.forEach((v, k) => {
+        path?.forEach((v, k) => {
             if ((k + 1) % 2 === 1) {
                 const matches = this.textModel.findMatches(
                     HCL_REGEX_FUNC.resourceValuebyType(v), currentRange, true, false, null, true);

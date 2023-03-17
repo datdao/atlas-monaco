@@ -15,6 +15,7 @@ class CodeCompletion {
 	items(): monaco.languages.CompletionItemProvider {
 		const completionItems = this.buildCompletionItems()
 		const globalCompletionItems = this.buildGlobalSearchCompletionItems()
+		const rootResources = Object.keys(this.hclTmpl)
 
 		return {
 			triggerCharacters: ["."],
@@ -25,27 +26,35 @@ class CodeCompletion {
 
 				const hclParser = new HclParser(textModel, position)
 				const range = hclParser.getWordRange()
-				const resources = hclParser.listBlockScope()
+				const scopes = hclParser.listScopes()
+				
 				
 				if((context.triggerKind == 1 && context.triggerCharacter == ".")) {
-					const path = hclParser.parseCurrentWordToPath()
+					const resources = hclParser.parentResources()
+					let path = hclParser.parseCurrentWordToPath()
+
+					// correct relative path
+					if (path.length > 0 && !rootResources.includes(path[0])){
+						path = [resources[0]?.resource,resources[0]?.values[0], ...path]
+					}
+
 					const referencedResourceValues = hclParser.findReferencedResourceValues(path)
 					const completionItems = globalCompletionItems(referencedResourceValues)		
 								
 					return {
 						suggestions: completionItems.filter((completionItem : any) => {
-							return completionItem(range, resources) != null
+							return completionItem(range, scopes) != null
 						}).map((completionItem : any) => {
-							return completionItem(range, resources)
+							return completionItem(range, scopes)
 						}),
 					}
 				}
 					
 				return {
 					suggestions: completionItems.filter((completionItem) => {
-						return completionItem(range, resources) != null
+						return completionItem(range, scopes) != null
 					}).map((completionItem) => {
-						return completionItem(range, resources)
+						return completionItem(range, scopes)
 					}),
 				};
 			},
@@ -132,9 +141,7 @@ class CodeCompletion {
 
 	// Resource template
 	buildResourceCompletionTemplate(range : monaco.IRange, key : string, config: any = null) {
-		
 		const name = (config?.allowNullName ? '' : '"${?}"')
-		console.log(config)
 		return {
 			label: key,
 			kind: monaco.languages.CompletionItemKind.Method,
