@@ -139,7 +139,7 @@ class HclParser {
 
     findParentBracket(
         pairBracket: Bracket = PairCurlyBracket, position: monaco.Position = null, 
-        level  = 1, direction: Direction = Direction.up) : number {
+        level = 1, direction: Direction = Direction.up) : number {
         if (position == null) return
         let lineNumber = position.lineNumber
 

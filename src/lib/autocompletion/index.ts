@@ -62,66 +62,68 @@ class CodeCompletion {
 
 	buildItems(scopes : string[] = [], hclTmpl : any = null) : any[] {
 		const completionItems : any[] = []
-
+		
 		if (hclTmpl == null) {
 			hclTmpl= this.hclTmpl
 		}
 
 		Object.entries(hclTmpl).forEach(([key, value]) => {	
 			const definedScopes = [...scopes]
-
 			scopes.push(key)
 			
-			if (Object.prototype.toString.call(value) === '[object Object]') {
-				
-				// Push Resource completion Items
-				completionItems.push((range : monaco.IRange, scopes: string[]) => {
-					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildResourceTemplate(key, range, resourceConfig[[...scopes,key].join(".")]) : undefined
-				})
-
-				
-				// [IMPORTANT] trigger recursion
-				completionItems.push(...this.buildItems([...scopes], value))
-				
-				scopes = scopes.filter((item) => item !== key)
-
-				return completionItems
-			}
-
-			// Push Value completion Items
-			if (Object.prototype.toString.call(value) === '[object Array]') {
-				// Push Attribute completion Items
-				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
-					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrDefaultTemplate(key, range) : null
-				})
-
-				const valueDefinedScopes = [...scopes]
-				
-				Object.entries(value).forEach(([idx]) => {
-					completionItems.push((range : monaco.IRange, resources: string[]) => { 
-						return this.isValidScope(resources, valueDefinedScopes) ?
-						this.buildValueTemplate(value[idx], range) : null
+			switch (Object.prototype.toString.call(value)) {
+				case '[object Object]':
+					// Push Resource completion Items
+					completionItems.push(this.buildResourceItem(key, definedScopes))
+					
+					// [IMPORTANT] trigger recursion
+					completionItems.push(...this.buildItems([...scopes], value))
+					break;
+				case '[object Array]':
+					// Push Attribute completion Items
+					completionItems.push(this.buildAttributeItem(key, "", definedScopes))
+					
+					Object.entries(value).forEach(([idx]) => {
+						completionItems.push(this.buildValueItem(value[idx], scopes))
 					})
-				})
-			}
-			
-			if (Object.prototype.toString.call(value) === '[object String]') {
-				// Push Attribute completion Items
-				completionItems.push((range : monaco.IRange, scopes: string[]) => { 
-					return this.isValidScope(scopes, definedScopes) ? 
-					this.buildAttrValueTemplate(key, value as string, range) : null
-				})
+					break;
+				case '[object String]':
+					completionItems.push(this.buildAttributeItem(key, value as string, definedScopes))
+					break;
+				default: 
+					break;
 			}
 
-			scopes = scopes.filter((item) => {
-				return item !== key
+			scopes = scopes.filter((scope) => {
+				return scope !== key
 			})
-			
 		});
 
 		return completionItems
+	}
+
+	buildResourceItem(key:string, definedScopes: string[]) {
+		return (range : monaco.IRange, currentScopes: string[]) => { 
+			return this.isValidScope(currentScopes, definedScopes) ? 
+			this.buildResourceTemplate(key, range, resourceConfig[[...definedScopes,key].join(".")]) : null
+		}
+	}
+
+	buildAttributeItem(key:string, value: string, definedScopes: string[]) {
+		return (range : monaco.IRange, currentScopes: string[]) => {
+			if (!this.isValidScope(currentScopes, definedScopes)) {
+				return null
+			}
+
+			return value == "" ? this.buildAttrDefaultTemplate(key, range) : this.buildAttrValueTemplate(key, value, range)
+		}
+	}
+
+	buildValueItem(key:string, definedScopes: string[]) {
+		return (range : monaco.IRange, currentScopes: string[]) => { 
+			return this.isValidScope(currentScopes, definedScopes) ? 
+			this.buildValueTemplate(key, range) : null
+		}
 	}
 
 	buildGlobalSearchItems() : any {
