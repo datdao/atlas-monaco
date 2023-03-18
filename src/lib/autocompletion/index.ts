@@ -22,13 +22,12 @@ class CodeCompletion {
 				textModel : monaco.editor.ITextModel,
 				position : monaco.Position,
 				context : monaco.languages.CompletionContext) : monaco.languages.ProviderResult<monaco.languages.CompletionList> {
-
 				const hclParser = new HclParser(textModel, position)
 				const range = hclParser.getWordRange()
 				const scopes = hclParser.listScopes()
+				let items = completionItems
 				
-				
-				if((context.triggerKind == 1 && context.triggerCharacter == ".")) {
+				if(context.triggerKind == 1 && context.triggerCharacter == ".") {
 					const resources = hclParser.findParentResources()
 					let path = hclParser.parseCurrentWordToPath()
 
@@ -38,22 +37,14 @@ class CodeCompletion {
 					}
 
 					const referencedResourceValues = hclParser.findReferencedResourceValues(path)
-					const completionItems = globalCompletionItems(referencedResourceValues)		
-								
-					return {
-						suggestions: completionItems.filter((completionItem : any) => {
-							return completionItem(range, scopes) != null
-						}).map((completionItem : any) => {
-							return completionItem(range, scopes)
-						}),
-					}
+					items = globalCompletionItems(referencedResourceValues)
 				}
 					
 				return {
-					suggestions: completionItems.filter((completionItem) => {
-						return completionItem(range, scopes) != null
-					}).map((completionItem) => {
-						return completionItem(range, scopes)
+					suggestions: items.filter((item) => {
+						return item(range, scopes) != null
+					}).map((item) => {
+						return item(range, scopes)
 					}),
 				};
 			},
@@ -89,8 +80,6 @@ class CodeCompletion {
 					break;
 				case '[object String]':
 					completionItems.push(this.buildAttributeItem(key, value as string, definedScopes))
-					break;
-				default: 
 					break;
 			}
 
@@ -209,8 +198,6 @@ class CodeCompletion {
 		}
 		return true
 	}
-
-	
 }
 
 export default CodeCompletion
