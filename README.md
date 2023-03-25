@@ -52,7 +52,7 @@ By using the AutoRegisterToMonaco() function, all configurations will be registe
 
 ```ts
 
-const atlashcl = new AtlasHcl(dialect)
+const atlashcl = new AtlasHCL(dialect)
   
   // Register new language 
   monaco.languages.register({

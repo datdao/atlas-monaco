@@ -1,4 +1,4 @@
-import { dataType } from '../../data/sql';
+import { dataType } from '../../../atlashcl/templates/schema';
 
 describe('sql', () => {
     test('array datatype', () => {

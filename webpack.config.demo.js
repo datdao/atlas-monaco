@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   mode: "development",
   devtool: 'cheap-module-source-map',
-  entry: './src/demo/index.ts',
+  entry: './src/demo/index.tsx',
   output: {
     filename: 'index.js'
   },
@@ -32,7 +32,17 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           { loader: "css-loader", options: { sourceMap: true } },
         ],
-      }
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true
+          }
+        }
+      },
     ]
   },
   plugins: [
@@ -42,6 +52,6 @@ module.exports = {
     new HtmlWebpackPlugin(),
   ],
   resolve: {
-    extensions: ['.ts', '.js', '.json']
+    extensions: ['.ts', '.js', '.json', '.tsx']
   }
 };

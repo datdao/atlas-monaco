@@ -1,20 +1,20 @@
-export const sql = {
+export const schema = {
     sqlite: {
         schema: {
-            charset: "\"${0}\"",
+            charset: "\"${?}\"",
         },
 
         table: {
             index: {
-                comment: "\"${0}\"",
-                columns: "[${0}]",
+                comment: "\"${?}\"",
+                columns: "[${?}]",
                 unique: ["true","false"],
                 on: {
-                    column: "\"${0}\"",
+                    column: "\"${?}\"",
                 }
             },
             column: {
-                comment: "\"${0}\"",
+                comment: "\"${?}\"",
                 type: [
                     "bit",
                     "binary",
@@ -22,4 +22,10 @@ export const sql = {
             }
         }
     },
+}
+
+export const schemaConfig = {
+    "table.index.on": {
+        allowNullName: true
+    } 
 }

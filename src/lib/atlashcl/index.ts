@@ -1,10 +1,9 @@
 
-import { Dialect } from "./dialect";
 import * as monaco from 'monaco-editor';
 import { defaultConfig, Config } from "./config";
-import CodeCompletion from "./autocompletion";
 
-export interface IAtlasHcl {
+
+export interface IAtlasHCL {
   getLanguageName(): string
   getLanguageExt(): string[]
   getLanguageConf(): any
@@ -16,22 +15,15 @@ export interface ICodeCompletion {
   getProvider() : monaco.languages.CompletionItemProvider
 }
 
-class AtlasHcl implements IAtlasHcl {
-    private dialect: Dialect;
+class AtlasHCL implements IAtlasHCL {
     private config: Config;
     private codeCompletion: ICodeCompletion;
   
     constructor(
-      dialect : Dialect = Dialect.mysql, 
-      config : Config = defaultConfig(),
-      codeCompletion: ICodeCompletion = null) {
-      this.dialect = dialect
+      codeCompletion: ICodeCompletion,
+      config : Config = defaultConfig()) {
       this.config = config
       this.codeCompletion = codeCompletion
-      
-      if (codeCompletion == null) {
-        this.codeCompletion = new CodeCompletion(this.dialect)
-      }
     }
   
     getLanguageConf(): any {
@@ -55,4 +47,4 @@ class AtlasHcl implements IAtlasHcl {
     }
   }
 
-export default AtlasHcl
+export default AtlasHCL

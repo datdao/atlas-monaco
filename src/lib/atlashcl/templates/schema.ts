@@ -23,7 +23,7 @@ export const dataType = {
     }
 }
 
-export const resourceConfig = {
+export const schemaConfig = {
     "table.primary_key": {
         allowNullName: true,
     },
@@ -302,7 +302,7 @@ export default {
                     "serial",
                     "bigserial",
                     "varchar",
-                    dataType.func("varchar", [dataType.string]),
+                    dataType.func("varchar", [dataType.ref]),
                     "char",
                     dataType.func("char", [dataType.string]),
                     "text",

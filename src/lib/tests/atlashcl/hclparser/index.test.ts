@@ -1,44 +1,44 @@
-import HclParser, * as hclParser from '../../autocompletion/hclparser';
-import * as regexdata from './testdata/regex';
-import * as modeldata from './testdata/model';
+import HclParser, * as hclParser from '../../../atlashcl/hclparser';
+import * as regexdata from '../../testdata/regex';
+import * as modeldata from '../../testdata/model';
 
 
 
 it('Runs without crashing', () => {});
 
 describe('regex', () => {
-    describe('resourceType', () => {
+    describe('blockType', () => {
         test('default', () => {
-            const result = regexdata.hclResourceLine.default.match(hclParser.HCL_REGEX.resourceType);
+            const result = regexdata.hclResourceLine.default.match(hclParser.HCL_REGEX.blockType);
             expect(Array.from(result as RegExpMatchArray)).toEqual(["table \"users\" {","table"]);
         });
 
         test('hclAttrLine.default', () => {
-            const result = regexdata.hclAttrLine.default.match(hclParser.HCL_REGEX.resourceType);
+            const result = regexdata.hclAttrLine.default.match(hclParser.HCL_REGEX.blockType);
             expect(result).toBe(null);
         });
 
         test('haveBracketInValue', () => {
-            const result = regexdata.hclResourceLine.haveBracketInValue.match(hclParser.HCL_REGEX.resourceType);
+            const result = regexdata.hclResourceLine.haveBracketInValue.match(hclParser.HCL_REGEX.blockType);
             expect(Array.from(result as RegExpMatchArray)).toEqual(["table \"{}\" {","table"]);
         });
 
         test('uncomplete', () => {
-            const result = regexdata.hclResourceLine.uncomplete.match(hclParser.HCL_REGEX.resourceType);
+            const result = regexdata.hclResourceLine.uncomplete.match(hclParser.HCL_REGEX.blockType);
             expect(result).toBe(null);
         });
 
         test('uncompleteAndHaveBracketInValue', () => {
-            const result = regexdata.hclResourceLine.uncompleteAndHaveBracketInValue.match(hclParser.HCL_REGEX.resourceType);
+            const result = regexdata.hclResourceLine.uncompleteAndHaveBracketInValue.match(hclParser.HCL_REGEX.blockType);
             expect(result).toBe(null);
         });
     })
 
-    describe('resourceValue', () => {
+    describe('blockValue', () => {
         test('default', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.resourceValue.exec(regexdata.hclResourceLine.default)) !== null) {
+            while ((match = hclParser.HCL_REGEX.blockValue.exec(regexdata.hclResourceLine.default)) !== null) {
                 values.push(match[1])
             }
 
@@ -48,7 +48,7 @@ describe('regex', () => {
         test('multivalues', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.resourceValue.exec(regexdata.hclResourceLine.multivalues)) !== null) {
+            while ((match = hclParser.HCL_REGEX.blockValue.exec(regexdata.hclResourceLine.multivalues)) !== null) {
                 values.push(match[1])
             }
 
@@ -182,28 +182,28 @@ describe('parser', () => {
 
     })
 
-    describe('findResourceAtLineNumber', () => {
-        test('resourceLine', () => {
+    describe('findBlockAtLineNumber', () => {
+        test('blockLine', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 2} as any)
-            const result = parser.findResourceAtLineNumber(2)
+            const result = parser.findBlockAtLineNumber(2)
 
             expect(result).toEqual({
-                resource: "table",
+                block: "table",
                 values: ["users"],
                 lineNumber: 2
             })
         })
 
-        test('resourceLineMultiValues', () => {
+        test('blockLineMultiValues', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 12} as any)
-            const result = parser.findResourceAtLineNumber(12)
+            const result = parser.findBlockAtLineNumber(12)
 
             expect(result).toEqual({
-                resource: "table",
+                block: "table",
                 values: ["orders", "orders2"],
                 lineNumber: 12
             })
@@ -213,19 +213,19 @@ describe('parser', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
-            const result = parser.findResourceAtLineNumber(5)
+            const result = parser.findBlockAtLineNumber(5)
 
             expect(result).toBeUndefined()
         })
 
-        test('resourceLineEmptyValue', () => {
+        test('blockLineEmptyValue', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 7} as any)
-            const result = parser.findResourceAtLineNumber(7)
+            const result = parser.findBlockAtLineNumber(7)
 
             expect(result).toEqual({
-                resource: "primary_key",
+                block: "primary_key",
                 values: [],
                 lineNumber: 7
             })
@@ -314,9 +314,9 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentResource({lineNumber: 3} as any)
+            const result = parser.findParentBlock({lineNumber: 3} as any)
             expect(result).toEqual({
-                resource: "table",
+                block: "table",
                 values: ["users"],
                 lineNumber: 2
             })
@@ -327,9 +327,9 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentResource({lineNumber: 5} as any)
+            const result = parser.findParentBlock({lineNumber: 5} as any)
             expect(result).toEqual({
-                resource: "column",
+                block: "column",
                 values: ["id"],
                 lineNumber: 4
             })
@@ -340,9 +340,9 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentResource({lineNumber: 8} as any)
+            const result = parser.findParentBlock({lineNumber: 8} as any)
             expect(result).toEqual({
-                resource: "primary_key",
+                block: "primary_key",
                 values: [],
                 lineNumber: 7
             })
@@ -355,10 +355,10 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            const result = parser.findParentResources()
+            const result = parser.findParentBlocks()
             expect(result).toEqual([
                 {
-                    resource: "table",
+                    block: "table",
                     values: ["users"],
                     lineNumber: 2
                 }
@@ -370,15 +370,15 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
-            const result = parser.findParentResources()
+            const result = parser.findParentBlocks()
             expect(result).toEqual([
                 {
-                    resource: "table",
+                    block: "table",
                     values: ["users"],
                     lineNumber: 2
                 },
                 {
-                    resource: "column",
+                    block: "column",
                     values: ["id"],
                     lineNumber: 4
                 }
@@ -390,15 +390,15 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
 
-            const result = parser.findParentResources()
+            const result = parser.findParentBlocks()
             expect(result).toEqual([
                 {
-                    resource: "table",
+                    block: "table",
                     values: ["users"],
                     lineNumber: 2
                 },
                 {
-                    resource: "primary_key",
+                    block: "primary_key",
                     values: [],
                     lineNumber: 7
                 }
@@ -412,7 +412,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 2} as any)
 
-            const result = parser.listScopes()
+            const result = parser.listNestedScopes()
             expect(result).toEqual([])
         })
 
@@ -421,7 +421,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            const result = parser.listScopes()
+            const result = parser.listNestedScopes()
             expect(result).toEqual(["table","schema"])
         })
 
@@ -430,7 +430,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
-            const result = parser.listScopes()
+            const result = parser.listNestedScopes()
             expect(result).toEqual(["table", "column", "type"])
         })
     })
@@ -441,7 +441,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
-            const result = parser.parseCurrentWordToPath()
+            const result = parser.parseCurrentWordToNestedScopes()
             expect(result).toEqual(["schema"])
         })
 
@@ -450,7 +450,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 22} as any)
 
-            const result = parser.parseCurrentWordToPath()
+            const result = parser.parseCurrentWordToNestedScopes()
             expect(result).toEqual(["table","users","column"])
         })
 
@@ -459,7 +459,7 @@ describe('parser', () => {
                 modeldata.textModel as any,
                 {lineNumber: 21} as any)
 
-            const result = parser.parseCurrentWordToPath()
+            const result = parser.parseCurrentWordToNestedScopes()
             expect(result).toEqual(["column"])
         })
     })
@@ -517,7 +517,7 @@ describe('parser', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 1} as any)
-            const result = parser.findReferencedResourceValues(["table"])
+            const result = parser.findReferencedBlockValues(["table"])
 
             expect(result).toEqual([
                 "users", "orders", "orders2", "customers"
@@ -528,7 +528,7 @@ describe('parser', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 1} as any)
-            const result = parser.findReferencedResourceValues(["table","users","column"])
+            const result = parser.findReferencedBlockValues(["table","users","column"])
 
             expect(result).toEqual([
                 "id"
@@ -539,7 +539,7 @@ describe('parser', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
-            const result = parser.findReferencedResourceValues(["column"])
+            const result = parser.findReferencedBlockValues(["column"])
 
             expect(result).toEqual(["id","owner_id","id"])
         })
@@ -548,7 +548,7 @@ describe('parser', () => {
             const parser = new HclParser(
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
-            const result = parser.findReferencedResourceValues(["column"])
+            const result = parser.findReferencedBlockValues(["column"])
 
             expect(result).toEqual(["id","owner_id","id"])
         })
@@ -583,7 +583,7 @@ describe('parser', () => {
                     const parser = new HclParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
-                    parser.findParentResources()
+                    parser.findParentBlocks()
                     
                 }
             }
@@ -599,7 +599,7 @@ describe('parser', () => {
                     const parser = new HclParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
-                    parser.findReferencedResourceValues(getRandomElement([[""], ["table"], ["column", "users"], [0,1,2], [null]]))
+                    parser.findReferencedBlockValues(getRandomElement([[""], ["table"], ["column", "users"], [0,1,2], [null]]))
                     
                 }
             }

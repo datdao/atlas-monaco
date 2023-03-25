@@ -2,14 +2,14 @@ import * as monaco from 'monaco-editor';
 
 export const HCL_REGEX = {
     /*
-        table "users" { }  => Match a first word in line "type", 
+        table "users" { }  => Match a first word in line "table", 
     */
-	resourceType: /(\w+).*(?<!["]){(?!["])/,
+	blockType: /(\w+).*(?<!["]){(?!["])/,
     
     /*
         table "users" { }  => Match "users"
     */
-	resourceValue: /"(\w+)"/g,
+	blockValue: /"(\w+)"/g,
 
     /*
         type = int  => Match "type"
@@ -32,13 +32,13 @@ export const HCL_REGEX_FUNC = {
         return new RegExp(`${bracket.open}|${bracket.close}`, "gm")
     },
 
-    resourceValuebyType: (type: string) => {
+    blockValuebyType: (type: string) => {
         return `${type}(.*)\\{`
     }
 }
 
-type Resource = {
-    resource: string,
+type Block = {
+    block: string,
     values: string[],
     lineNumber: number
 }
@@ -96,11 +96,11 @@ class HclParser {
             }
         }
     */
-    findParentResource(position : monaco.Position): Resource {
+    findParentBlock(position : monaco.Position): Block {
         const lineNumber = this.findParentBracket(PairCurlyBracket, position, 1, Direction.up)
-        const resource = this.findResourceAtLineNumber(lineNumber)
+        const block = this.findBlockAtLineNumber(lineNumber)
 
-        return resource
+        return block
     }
 
 
@@ -116,18 +116,18 @@ class HclParser {
         }
     */
 
-    findParentResources() {
-        const resources : Resource[] = []
-        let parentResource = this.findParentResource(this.position)
+    findParentBlocks() {
+        const blocks : Block[] = []
+        let parentBlock = this.findParentBlock(this.position)
         
-        while (parentResource != null) {
-            resources.push(parentResource)
+        while (parentBlock != null) {
+            blocks.push(parentBlock)
             
-            const parentPosition = new monaco.Position(parentResource.lineNumber, this.position.column);    
-            parentResource = this.findParentResource(parentPosition)
+            const parentPosition = new monaco.Position(parentBlock.lineNumber, this.position.column);    
+            parentBlock = this.findParentBlock(parentPosition)
         }
         
-        return resources.reverse()
+        return blocks.reverse()
     }
 
     /*
@@ -175,12 +175,12 @@ class HclParser {
                             │      ◄────────────┘
     */
     
-    listScopes() : string[] {
+    listNestedScopes() : string[] {
         const scopes : string[] = []
-        const resources = this.findParentResources()
+        const blocks = this.findParentBlocks()
 
-        resources.forEach((resource) => {
-            scopes.push(resource.resource)
+        blocks.forEach((block) => {
+            scopes.push(block.block)
         })
 
         let attributeType;
@@ -197,24 +197,24 @@ class HclParser {
         ─────   ─────    ─────
           ▲       ▲       ▲
           │       │       │
-       resource  ─┴───────┴─
+       block  ─┴───────┴─
                     values
     */
 
-    findResourceAtLineNumber(lineNumber : number) : Resource {
-        const resourceType = this.textModel.getLineContent(lineNumber)?.match(HCL_REGEX.resourceType);
-        const resourceValues : string[] = []
+    findBlockAtLineNumber(lineNumber : number) : Block {
+        const blockType = this.textModel.getLineContent(lineNumber)?.match(HCL_REGEX.blockType);
+        const blockValues : string[] = []
         
-        if (resourceType == null) return
+        if (blockType == null) return
 
         let match;
-        while ((match = HCL_REGEX.resourceValue.exec(this.textModel.getLineContent(lineNumber))) !== null) {
-            resourceValues.push(match[1])
+        while ((match = HCL_REGEX.blockValue.exec(this.textModel.getLineContent(lineNumber))) !== null) {
+            blockValues.push(match[1])
         }
 
         return {
-            resource: resourceType[1],
-            values: resourceValues,
+            block: blockType[1],
+            values: blockValues,
             lineNumber: lineNumber
         }
     }
@@ -227,16 +227,16 @@ class HclParser {
         [table,users,column,id]
     */
 
-    parseCurrentWordToPath() : string[] {
-        const path : string[] = []
+    parseCurrentWordToNestedScopes() : string[] {
+        const scopes : string[] = []
         let match;
 
         const rawPath = this.textModel.getLineContent(this.position.lineNumber).match(HCL_REGEX.rawPath)[0]
         while ((match = HCL_REGEX.path.exec(rawPath)) !== null) {
-            path.push(match[1])
+            scopes.push(match[1])
         }
         
-        return path
+        return scopes
     }
 
     // 1 = Outer | 2 = Inter | 0 = undefined
@@ -262,8 +262,8 @@ class HclParser {
                 columns  =  [column.  ──────┘
     */
 
-    findReferencedResourceValues(path : string[]) : string[] {    
-        let referencedResourceValues : monaco.editor.FindMatch[] = []
+    findReferencedBlockValues(scopes : string[]) : string[] {    
+        let referencedBlockValues : monaco.editor.FindMatch[] = []
         
         let currentRange: monaco.IRange = {
             startColumn: 1,
@@ -272,37 +272,37 @@ class HclParser {
             endLineNumber: this.textModel.getLineCount()
         }
         
-        path?.forEach((v, k) => {
-            if ((k + 1) % 2 === 1) {
+        scopes?.forEach((scope, idx) => {
+            if ((idx + 1) % 2 === 1) {
                 const matches = this.textModel.findMatches(
-                    HCL_REGEX_FUNC.resourceValuebyType(v), currentRange, true, false, null, true);
-                referencedResourceValues.push(...matches)
+                    HCL_REGEX_FUNC.blockValuebyType(scope), currentRange, true, false, null, true);
+                referencedBlockValues.push(...matches)
             } else {
-                // remove unsed resource
-                referencedResourceValues = referencedResourceValues.filter((referencedResourceValue) => {
-                    return referencedResourceValue.matches[1].includes(v)
+                // remove unsed block
+                referencedBlockValues = referencedBlockValues.filter((referencedBlockValue) => {
+                    return referencedBlockValue.matches[1].includes(scope)
                 })
 
-                if (referencedResourceValues[0] != null) {
+                if (referencedBlockValues[0] != null) {
                     const positonAtRegexMatch = new monaco.Position(
-                        referencedResourceValues[0].range.startLineNumber, 
-                        referencedResourceValues[0].range.endColumn);
+                        referencedBlockValues[0].range.startLineNumber, 
+                        referencedBlockValues[0].range.endColumn);
 
                     currentRange = new monaco.Range(
-                        referencedResourceValues[0].range.startLineNumber,
-                        referencedResourceValues[0].range.startColumn, 
+                        referencedBlockValues[0].range.startLineNumber,
+                        referencedBlockValues[0].range.startColumn, 
                         this.findParentBracket(PairCurlyBracket, positonAtRegexMatch, 1, Direction.down),
                         this.textModel.getLineMaxColumn(currentRange.endLineNumber ))     
                 }
 
-                referencedResourceValues = []
+                referencedBlockValues = []
             }
         });
 
         let values : string[] = []
-        referencedResourceValues?.forEach((referencedResourceValue) => {
-            const resource = this.findResourceAtLineNumber(referencedResourceValue.range.startLineNumber);
-            values = [...values, ...resource.values]
+        referencedBlockValues?.forEach((referencedBlockValue) => {
+            const block = this.findBlockAtLineNumber(referencedBlockValue.range.startLineNumber);
+            values = [...values, ...block.values]
         })
 
         return values
