@@ -53,5 +53,10 @@ module.exports = {
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json', '.tsx']
-  }
+  },
+  ignoreWarnings: [
+    {
+      module: /hcl2-parser/,
+    },
+  ],
 };

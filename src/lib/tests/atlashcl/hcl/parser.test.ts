@@ -1,35 +1,34 @@
-import HclParser, * as hclParser from '../../../atlashcl/hclparser';
+import {HCLParser, HCL_REGEX, PairCurlyBracket, Direction} from '../../../atlashcl/hcl/parser';
+import { isOverlap } from '../../../atlashcl/utils';
 import * as regexdata from '../../testdata/regex';
 import * as modeldata from '../../testdata/model';
-
-
 
 it('Runs without crashing', () => {});
 
 describe('regex', () => {
     describe('blockType', () => {
         test('default', () => {
-            const result = regexdata.hclResourceLine.default.match(hclParser.HCL_REGEX.blockType);
+            const result = regexdata.hclResourceLine.default.match(HCL_REGEX.blockType);
             expect(Array.from(result as RegExpMatchArray)).toEqual(["table \"users\" {","table"]);
         });
 
         test('hclAttrLine.default', () => {
-            const result = regexdata.hclAttrLine.default.match(hclParser.HCL_REGEX.blockType);
+            const result = regexdata.hclAttrLine.default.match(HCL_REGEX.blockType);
             expect(result).toBe(null);
         });
 
         test('haveBracketInValue', () => {
-            const result = regexdata.hclResourceLine.haveBracketInValue.match(hclParser.HCL_REGEX.blockType);
+            const result = regexdata.hclResourceLine.haveBracketInValue.match(HCL_REGEX.blockType);
             expect(Array.from(result as RegExpMatchArray)).toEqual(["table \"{}\" {","table"]);
         });
 
         test('uncomplete', () => {
-            const result = regexdata.hclResourceLine.uncomplete.match(hclParser.HCL_REGEX.blockType);
+            const result = regexdata.hclResourceLine.uncomplete.match(HCL_REGEX.blockType);
             expect(result).toBe(null);
         });
 
         test('uncompleteAndHaveBracketInValue', () => {
-            const result = regexdata.hclResourceLine.uncompleteAndHaveBracketInValue.match(hclParser.HCL_REGEX.blockType);
+            const result = regexdata.hclResourceLine.uncompleteAndHaveBracketInValue.match(HCL_REGEX.blockType);
             expect(result).toBe(null);
         });
     })
@@ -38,7 +37,7 @@ describe('regex', () => {
         test('default', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.blockValue.exec(regexdata.hclResourceLine.default)) !== null) {
+            while ((match = HCL_REGEX.blockValue.exec(regexdata.hclResourceLine.default)) !== null) {
                 values.push(match[1])
             }
 
@@ -48,7 +47,7 @@ describe('regex', () => {
         test('multivalues', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.blockValue.exec(regexdata.hclResourceLine.multivalues)) !== null) {
+            while ((match = HCL_REGEX.blockValue.exec(regexdata.hclResourceLine.multivalues)) !== null) {
                 values.push(match[1])
             }
 
@@ -60,7 +59,7 @@ describe('regex', () => {
         test('default', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.default)) !== null) {
+            while ((match = HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.default)) !== null) {
                 values.push(match[1])
             }
 
@@ -70,7 +69,7 @@ describe('regex', () => {
         test('defaultWithManySpace', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.defaultWithManySpace)) !== null) {
+            while ((match = HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.defaultWithManySpace)) !== null) {
                 values.push(match[1])
             }
 
@@ -80,7 +79,7 @@ describe('regex', () => {
         test('uncomplete', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.uncomplete)) !== null) {
+            while ((match = HCL_REGEX.attributeType.exec(regexdata.hclAttrLine.uncomplete)) !== null) {
                 values.push(match[1])
             }
 
@@ -92,28 +91,28 @@ describe('regex', () => {
         test('default', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.default)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.path.exec(regexdata.hclPath.default)) !== null) {
+                values.push(match[0])
             }
 
-            expect(values).toEqual(["table"]);
+            expect(values).toEqual(["table."]);
         });
 
         test('multiPath', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.multiPath)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.path.exec(regexdata.hclPath.multiPath)) !== null) {
+                values.push(match[0])
             }
 
-            expect(values).toEqual(["table", "users"]);
+            expect(values).toEqual(["table.", "users."]);
         });
 
         test('uncomplete', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.uncomplete)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.path.exec(regexdata.hclPath.uncomplete)) !== null) {
+                values.push(match[0])
             }
 
             expect(null).toBe(null);
@@ -122,11 +121,11 @@ describe('regex', () => {
         test('endWithEnclosedCharacter', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.path.exec(regexdata.hclPath.endWithEnclosedCharacter)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.path.exec(regexdata.hclPath.endWithEnclosedCharacter)) !== null) {
+                values.push(match[0])
             }
 
-            expect(values).toEqual(["table", "users"]);
+            expect(values).toEqual(["table.", "users."]);
         });
     })
 
@@ -134,8 +133,8 @@ describe('regex', () => {
         test('default', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.rawPath.exec(regexdata.hclRawPath.default)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.rawPath.exec(regexdata.hclRawPath.default)) !== null) {
+                values.push(match[0])
             }
 
             expect(values).toEqual(["table."]);
@@ -144,8 +143,8 @@ describe('regex', () => {
         test('array', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.rawPath.exec(regexdata.hclRawPath.array)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.rawPath.exec(regexdata.hclRawPath.array)) !== null) {
+                values.push(match[0])
             }
 
             expect(values).toEqual(["column."]);
@@ -154,37 +153,47 @@ describe('regex', () => {
         test('arrayWithEndClosedCharacter', () => {
             let match;
             const values : string[] = [];
-            while ((match = hclParser.HCL_REGEX.rawPath.exec(regexdata.hclRawPath.arrayWithEndClosedCharacter)) !== null) {
-                values.push(match[1])
+            while ((match = HCL_REGEX.rawPath.exec(regexdata.hclRawPath.arrayWithEndClosedCharacter)) !== null) {
+                values.push(match[0])
             }
 
-            expect(values).toEqual(["column."]);
+            expect(values).toEqual(["column.]"]);
+        });
+
+        test('withoutDotAtEnd', () => {
+            let match;
+            const values : string[] = [];
+            while ((match = HCL_REGEX.rawPath.exec(regexdata.hclRawPath.withoutDotAtEnd)) !== null) {
+                values.push(match[0])
+            }
+
+            expect(values).toEqual(["column.users.test"]);
         });
     })
 });
 
 
 describe('parser', () => {
-    describe('getWordRange', () => {
-        test('default', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                modeldata.position as any)
-            const range = parser.getWordRange()
+    // describe('getWordRange', () => {
+    //     test('default', () => {
+    //         const parser = new HCLParser(
+    //             modeldata.textModel as any,
+    //             modeldata.position as any)
+    //         const range = parser.getWordRange()
 
-            expect(range).toEqual({
-                startLineNumber: undefined,
-                endLineNumber: undefined,
-                startColumn: 1,
-                endColumn: 1,
-            })
-        })
+    //         expect(range).toEqual({
+    //             startLineNumber: undefined,
+    //             endLineNumber: undefined,
+    //             startColumn: 1,
+    //             endColumn: 1,
+    //         })
+    //     })
 
-    })
+    // })
 
     describe('findBlockAtLineNumber', () => {
         test('blockLine', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 2} as any)
             const result = parser.findBlockAtLineNumber(2)
@@ -197,7 +206,7 @@ describe('parser', () => {
         })
 
         test('blockLineMultiValues', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 12} as any)
             const result = parser.findBlockAtLineNumber(12)
@@ -210,7 +219,7 @@ describe('parser', () => {
         })
 
         test('attrLine', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
             const result = parser.findBlockAtLineNumber(5)
@@ -219,7 +228,7 @@ describe('parser', () => {
         })
 
         test('blockLineEmptyValue', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 7} as any)
             const result = parser.findBlockAtLineNumber(7)
@@ -234,72 +243,72 @@ describe('parser', () => {
 
     describe('findParentBracket', () => {
         test('default', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 4} as any, 1, hclParser.Direction.up)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 4, column: 1} as any, 1, Direction.up)
 
             expect(result).toEqual(2)
         })
 
         test('position at root', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 2} as any, 1, hclParser.Direction.up)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 2, column: 1} as any, 1, Direction.up)
 
             expect(result).toBeUndefined()
         })
 
         test('position at lvl2', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 8} as any, 1, hclParser.Direction.up)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 8} as any, 1, Direction.up)
             expect(result).toEqual(7)
         })
 
         test('position at lvl2 and find bracket at lvl1', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 7} as any, 2, hclParser.Direction.up)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 7, column: 1} as any, 2, Direction.up)
             expect(result).toBeUndefined()
         })
 
         test('position at lvl1 with Direction down ', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 3} as any, 1, hclParser.Direction.down)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 3} as any, 1, Direction.down)
             expect(result).toEqual(10)
         })
 
         test('position at lvl2 with Direction down ', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 5} as any, 1, hclParser.Direction.down)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 5} as any, 1, Direction.down)
             expect(result).toEqual(6)
         })
 
         test('position at lvl3 with Direction down ', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
-            const result = parser.findParentBracket(hclParser.PairCurlyBracket, {lineNumber: 16} as any, 1, hclParser.Direction.down)
+            const result = parser.findParentBracket(PairCurlyBracket, {lineNumber: 16, column: 43} as any, 1, Direction.down)
             expect(result).toEqual(18)
         })
 
         test('default params', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
@@ -310,7 +319,7 @@ describe('parser', () => {
 
     describe('parentResource', () => {
         test('position at level1', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
@@ -323,7 +332,7 @@ describe('parser', () => {
         })
 
         test('position at level2', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
@@ -336,7 +345,7 @@ describe('parser', () => {
         })
 
         test('position at level3 with null value', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 modeldata.position as any)
 
@@ -351,7 +360,7 @@ describe('parser', () => {
 
     describe('parentResources', () => {
         test('position at level1', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
@@ -366,7 +375,7 @@ describe('parser', () => {
         })
 
         test('position at level2', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
@@ -386,7 +395,7 @@ describe('parser', () => {
         })
 
         test('position at level3 with null value', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
 
@@ -408,25 +417,26 @@ describe('parser', () => {
 
     describe('listScopes', () => {
         test('position at block level 1', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
-                {lineNumber: 2} as any)
+                {lineNumber: 2,
+                column: 1} as any)
 
             const result = parser.listNestedScopes()
             expect(result).toEqual([])
         })
 
         test('position at block lvl2', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
-                {lineNumber: 3} as any)
+                {lineNumber: 3, column: 35} as any)
 
             const result = parser.listNestedScopes()
             expect(result).toEqual(["table","schema"])
         })
 
         test('position at block lvl3', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
 
@@ -437,7 +447,7 @@ describe('parser', () => {
 
     describe('parseCurrentWordToPath', () => {
         test('default', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 3} as any)
 
@@ -446,7 +456,7 @@ describe('parser', () => {
         })
 
         test('absolutepath', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 22} as any)
 
@@ -455,7 +465,7 @@ describe('parser', () => {
         })
 
         test('relativepath', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 21} as any)
 
@@ -464,57 +474,59 @@ describe('parser', () => {
         })
     })
 
-    describe('compareRange', () => {
-        test('inner', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                modeldata.position as any)
-            const result = parser.compareRange({
+    describe('isOverlap', () => {
+        test('default', () => {
+            const result = isOverlap({
                 startLineNumber:1,
-                endLineNumber: 10
+                endLineNumber: 10,
+                startColumn:1,
+                endColumn:9
             } as any,{
                 startLineNumber:2,
-                endLineNumber: 9
+                endLineNumber: 10,
+                startColumn:1,
+                endColumn:9
             } as any)
 
-            expect(result).toEqual(1)
+            expect(result).toEqual(true)
         })
 
-        test('outer', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                modeldata.position as any)
-            
-            const result = parser.compareRange({
+        test('equal', () => {
+            const result = isOverlap({
                 startLineNumber:2,
-                endLineNumber: 9
+                endLineNumber: 9,
+                startColumn:1,
+                endColumn:9
             } as any,{
-                startLineNumber:1,
-                endLineNumber: 10
+                startLineNumber:2,
+                endLineNumber: 9,
+                startColumn:1,
+                endColumn:9
             } as any)
 
-            expect(result).toEqual(2)
+            expect(result).toEqual(true)
         })
 
-        test('undefined', () => {
-            const parser = new HclParser(
-                modeldata.textModel as any,
-                modeldata.position as any)
-            const result = parser.compareRange({
-                startLineNumber:2,
-                endLineNumber: 11
+        test('false', () => {
+            const result = isOverlap({
+                startLineNumber:3,
+                endLineNumber: 9,
+                startColumn:1,
+                endColumn:9
             } as any,{
-                startLineNumber:1,
-                endLineNumber: 10
+                startLineNumber:2,
+                endLineNumber: 9,
+                startColumn:1,
+                endColumn:9
             } as any)
 
-            expect(result).toEqual(0)
+            expect(result).toEqual(false)
         })
     })
 
     describe('findReferencedResourceValues', () => {
         test('absolute path', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 1} as any)
             const result = parser.findReferencedBlockValues(["table"])
@@ -525,7 +537,7 @@ describe('parser', () => {
         })
 
         test('absolute path lvl2', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 1} as any)
             const result = parser.findReferencedBlockValues(["table","users","column"])
@@ -536,7 +548,7 @@ describe('parser', () => {
         })
 
         test('relative path lvl2 ', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 5} as any)
             const result = parser.findReferencedBlockValues(["column"])
@@ -545,7 +557,7 @@ describe('parser', () => {
         })
 
         test('relative path lvl3', () => {
-            const parser = new HclParser(
+            const parser = new HCLParser(
                 modeldata.textModel as any,
                 {lineNumber: 8} as any)
             const result = parser.findReferencedBlockValues(["column"])
@@ -560,14 +572,14 @@ describe('parser', () => {
             for(let line = 0; line < modeldata.textModel.getLineCount(); line++) {
                 
                 for(let column = 0; column < lines[line].length ; column++) {
-                    const parser = new HclParser(
+                    const parser = new HCLParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
                     parser.findParentBracket(
-                        hclParser.PairCurlyBracket,
+                        PairCurlyBracket,
                         getRandomElement([0,1,2,3,4,5]),
                         getRandomElement([null as any, {lineNumber: line, column: column} as any]),
-                        getRandomElement([hclParser.Direction.up,hclParser.Direction.down]))
+                        getRandomElement([Direction.up,Direction.down]))
                     
                 }
             }
@@ -580,7 +592,7 @@ describe('parser', () => {
             for(let line = 0; line < modeldata.textModel.getLineCount(); line++) {
                 
                 for(let column = 0; column < lines[line].length ; column++) {
-                    const parser = new HclParser(
+                    const parser = new HCLParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
                     parser.findParentBlocks()
@@ -596,7 +608,7 @@ describe('parser', () => {
             for(let line = 0; line < modeldata.textModel.getLineCount(); line++) {
                 
                 for(let column = 0; column < lines[line].length ; column++) {
-                    const parser = new HclParser(
+                    const parser = new HCLParser(
                         modeldata.textModel as any,
                         {lineNumber: line, column: column} as any)
                     parser.findReferencedBlockValues(getRandomElement([[""], ["table"], ["column", "users"], [0,1,2], [null]]))

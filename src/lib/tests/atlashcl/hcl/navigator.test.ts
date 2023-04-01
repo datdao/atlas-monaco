@@ -1,5 +1,5 @@
-import { SuggestionType } from "../../../atlashcl/hcl"
-import { HCLNavigator } from "../../../atlashcl/hclnavigator"
+import { SuggestionType } from "../../../atlashcl/hcl/hcl"
+import { HCLNavigator } from "../../../atlashcl/hcl/navigator"
 import { schema, schemaConfig } from "../../testdata/hcltmpl"
 
 const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
@@ -65,7 +65,9 @@ describe('hclnavigator', () => {
                 type: SuggestionType.attribute,
                 value: "charset",
                 aliases: undefined,
-                config: null,
+                config: {
+                    "autoGenValue": "\"${?}\"",
+                },
                 desc: undefined
             },
         ])

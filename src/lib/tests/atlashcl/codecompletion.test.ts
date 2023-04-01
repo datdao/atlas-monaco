@@ -1,7 +1,7 @@
-import CodeCompletion, { decrementingCursorPosition } from "../../../atlashcl/codecompletion"
-import { HCLNavigator } from "../../../atlashcl/hclnavigator"
-import { schema, schemaConfig } from "../../testdata/hcltmpl"
-import { textModel } from "../../testdata/model"
+import CodeCompletion, { addCursorIndexToQuestionMarks } from "../../atlashcl/codecompletion"
+import { HCLNavigator } from "../../atlashcl/hcl/navigator"
+import { schema, schemaConfig } from "../testdata/hcltmpl"
+import { textModel } from "../testdata/model"
 
 const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
 const codeCompletion = new CodeCompletion(hclNavigator)
@@ -88,7 +88,7 @@ describe('codecompletion', () => {
             const completionItems = codeCompletion.buildCompletionItems(suggestions, null as any)
 
             expect(completionItems).toEqual([
-                codeCompletion.buildAttributeTemplate("comment"),
+                codeCompletion.buildAttributeTemplate("comment", null as any, {autoGenValue: "\"${?}\""}),
                 codeCompletion.buildAttributeTemplate("type"),
             ])
         })
@@ -101,6 +101,12 @@ describe('codecompletion', () => {
                 codeCompletion.buildValueTemplate("bit"),
                 codeCompletion.buildValueTemplate("binary")])
         })
+
+        test('default empty suggestion params', () => {
+            const completionItems = codeCompletion.buildCompletionItems(undefined,null as any)
+
+            expect(completionItems).toEqual([])
+        })
     })
 
     describe('items', () => {
@@ -109,12 +115,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 1,
+                column: 1
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 2,
                 endLineNumber: 1,
-                startColumn: 1,
+                startColumn: 2,
                 startLineNumber : 1,
             }
 
@@ -134,12 +141,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 4,
+                column: 1
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 2,
                 endLineNumber: 4,
-                startColumn: 1,
+                startColumn: 2,
                 startLineNumber : 4,
             }
 
@@ -160,12 +168,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 30,
+                column: 1
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 2,
                 endLineNumber: 30,
-                startColumn: 1,
+                startColumn: 2,
                 startLineNumber : 30,
             }
 
@@ -173,7 +182,7 @@ describe('codecompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildAttributeTemplate("comment", range),
+                    codeCompletion.buildAttributeTemplate("comment", range, {autoGenValue: "\"${?}\""}),
                     codeCompletion.buildAttributeTemplate("type", range)
                 ]  
             } 
@@ -185,12 +194,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 35,
+                column: 1
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 2,
                 endLineNumber: 35,
-                startColumn: 1,
+                startColumn: 2,
                 startLineNumber : 35,
             }
 
@@ -198,8 +208,8 @@ describe('codecompletion', () => {
                 textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
             expect(result).toEqual({
                 suggestions: [
-                    codeCompletion.buildAttributeTemplate("comment", range),
-                    codeCompletion.buildAttributeTemplate("columns", range),
+                    codeCompletion.buildAttributeTemplate("comment", range, {autoGenValue: "\"${1}\""}),
+                    codeCompletion.buildAttributeTemplate("columns", range, {autoGenValue: "[${1}]"}),
                     codeCompletion.buildAttributeTemplate("unique", range),
                     codeCompletion.buildBlockTemplate("on", range, {allowNullName: true})
                 ]  
@@ -212,12 +222,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 5,
+                column: 35
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 43,
                 endLineNumber: 5,
-                startColumn: 1,
+                startColumn: 36,
                 startLineNumber : 5,
             }
 
@@ -237,12 +248,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 22,
+                column: 1
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 2,
                 endLineNumber: 22,
-                startColumn: 1,
+                startColumn: 2,
                 startLineNumber : 22,
             }
 
@@ -262,12 +274,13 @@ describe('codecompletion', () => {
 
             const position: any = {
                 lineNumber: 21,
+                column: 51
             }
 
             const range: any = {
-                endColumn: 1,
+                endColumn: 52,
                 endLineNumber: 21,
-                startColumn: 1,
+                startColumn: 52,
                 startLineNumber : 21,
             }
 
@@ -280,53 +293,28 @@ describe('codecompletion', () => {
                 } 
             )
         })
-
-        test('resolveCompletionItem', () => {
-            const completionProvider = codeCompletion.getProvider()
-
-            const position: any = {
-                lineNumber: 37,
-            }
-
-            const range: any = {
-                endColumn: 1,
-                endLineNumber: 21,
-                startColumn: 1,
-                startLineNumber : 21,
-            }
-
-            completionProvider.provideCompletionItems(
-                textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
-
-            const commentCompletionItem = codeCompletion.buildAttributeTemplate("comment", range)
-            
-            commentCompletionItem.insertText = decrementingCursorPosition(commentCompletionItem.insertText + " \"${?}\"" + "\n${?}")
-            const result = completionProvider.resolveCompletionItem?.(
-                codeCompletion.buildAttributeTemplate("comment", range), null as any)
-            expect(result).toEqual(commentCompletionItem)
-        })
-
-        test('resolveCompletionItem another case', () => {
-            const completionProvider = codeCompletion.getProvider()
-
-            const position: any = {
-                lineNumber: 7,
-            }
-
-            const range: any = {
-                endColumn: 1,
-                endLineNumber: 21,
-                startColumn: 1,
-                startLineNumber : 21,
-            }
-
-            completionProvider.provideCompletionItems(
-                textModel as any, position, {triggerKind: 0, triggerCharacter: ""} as any, null as any)
-
-            const result = completionProvider.resolveCompletionItem?.(
-                codeCompletion.buildAttributeTemplate("type", range), null as any)
-            expect(result).toEqual(codeCompletion.buildAttributeTemplate("type", range))
-        })
     })
 
+})
+
+describe('addCursorIndexToQuestionMarks', () => {
+    test('have 4 question marks', () => {
+        const result = addCursorIndexToQuestionMarks("numeric(${?}, ${?}, ${?})\n${?}")
+        expect(result).toEqual("numeric(${1}, ${2}, ${3})\n${0}")
+    })
+    
+    test('have 3 question marks', () => {
+        const result = addCursorIndexToQuestionMarks("numeric(${?}, ${?})\n${?}")
+        expect(result).toEqual("numeric(${1}, ${2})\n${0}")
+    })
+    
+    test('have 2 question marks', () => {
+        const result = addCursorIndexToQuestionMarks("numeric(${?})\n${?}")
+        expect(result).toEqual("numeric(${1})\n${0}")
+    })
+    
+    test('have 1 question marks', () => {
+        const result = addCursorIndexToQuestionMarks("numeric()\n${?}")
+        expect(result).toEqual("numeric()\n${0}")
+    })
 })

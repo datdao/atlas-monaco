@@ -1,17 +1,15 @@
-
 import * as monaco from 'monaco-editor';
 import { defaultConfig, Config } from "./config";
 
-
-export interface IAtlasHCL {
+interface IAtlasHCL {
   getLanguageName(): string
   getLanguageExt(): string[]
   getLanguageConf(): any
   getTokenProvider(): monaco.languages.IMonarchLanguage
-  getCompletionProvider(): monaco.languages.CompletionItemProvider
+  getCodeCompletionProvider(): monaco.languages.CompletionItemProvider
 }
 
-export interface ICodeCompletion {
+interface ICodeCompletion {
   getProvider() : monaco.languages.CompletionItemProvider
 }
 
@@ -42,9 +40,14 @@ class AtlasHCL implements IAtlasHCL {
       return this.config.token
     }
     
-    getCompletionProvider(): monaco.languages.CompletionItemProvider {
+    getCodeCompletionProvider(): monaco.languages.CompletionItemProvider {
       return this.codeCompletion.getProvider()
     }
   }
 
 export default AtlasHCL
+
+export {
+  IAtlasHCL,
+  ICodeCompletion
+}

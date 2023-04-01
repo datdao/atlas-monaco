@@ -17,14 +17,6 @@ const styles = {
 }
 
 const App = () => {
-  const monaco = useMonaco();
-  
-  useEffect(() => {
-    if (monaco) {
-     AtlasHCL.AutoRegister(monaco)
-    }
-  }, [monaco]);
-
   return <div style={styles.container}>
     <div style={styles.editor}><HCLSchemaEditor/></div>
     <div style={styles.editor}><HCLConfigEditor/></div>

@@ -24,7 +24,13 @@ export const HCL_REGEX = {
     /*
         [table.users, column.users , column.users.]  => Match "column.users."
     */
-    rawPath: /(\w+\.)+([^\w]|$)/g
+    rawPath: /(\w+\.)+([^\w]|$)|(\w+\.)+(\w+$)/g
+}
+
+type Block = {
+    block: string,
+    values: string[],
+    lineNumber: number
 }
 
 export const HCL_REGEX_FUNC = {
@@ -35,12 +41,6 @@ export const HCL_REGEX_FUNC = {
     blockValuebyType: (type: string) => {
         return `${type}(.*)\\{`
     }
-}
-
-type Block = {
-    block: string,
-    values: string[],
-    lineNumber: number
 }
 
 export const enum Direction {
@@ -60,11 +60,11 @@ export const PairCurlyBracket : Bracket = {
     close: "}"
 }
 
-class HclParser {
+export class HCLParser {
     private textModel: monaco.editor.ITextModel
     private position: monaco.Position
 
-    constructor(textModel: monaco.editor.ITextModel, position: monaco.Position) {
+    constructor(textModel?: monaco.editor.ITextModel, position?: monaco.Position) {
         this.textModel = textModel
         this.position = position
     }
@@ -76,6 +76,7 @@ class HclParser {
         Schema         |Schema|
             -
     */
+
     getWordRange() : monaco.IRange  {
         const word = this.textModel.getWordUntilPosition(this.position);
 
@@ -96,6 +97,7 @@ class HclParser {
             }
         }
     */
+
     findParentBlock(position : monaco.Position): Block {
         const lineNumber = this.findParentBracket(PairCurlyBracket, position, 1, Direction.up)
         const block = this.findBlockAtLineNumber(lineNumber)
@@ -116,17 +118,17 @@ class HclParser {
         }
     */
 
-    findParentBlocks() {
+    findParentBlocks() : Block[] {
         const blocks : Block[] = []
         let parentBlock = this.findParentBlock(this.position)
         
         while (parentBlock != null) {
             blocks.push(parentBlock)
             
-            const parentPosition = new monaco.Position(parentBlock.lineNumber, this.position.column);    
+            const parentPosition = new monaco.Position(parentBlock.lineNumber, 0);    
             parentBlock = this.findParentBlock(parentPosition)
         }
-        
+
         return blocks.reverse()
     }
 
@@ -141,23 +143,35 @@ class HclParser {
         pairBracket: Bracket = PairCurlyBracket, position: monaco.Position = null, 
         level = 1, direction: Direction = Direction.up) : number {
         if (position == null) return
-        let lineNumber = position.lineNumber
+        const isDown = direction === Direction.down;
+        let lineNumber = isDown ? position.lineNumber - 1 : position.lineNumber + 1
+        let column = position.column
 
         let bracketcount = level
         while (bracketcount > 0) {
             // Move cursor to each line depend on direction
-            direction == Direction.down ? lineNumber++ : lineNumber--
+            isDown ? lineNumber++ : lineNumber--
+            if ((lineNumber < 1 || lineNumber > this.textModel.getLineCount())) return
 
-            // EOF
-            if ((lineNumber == 0 || lineNumber > this.textModel.getLineCount()) || 
-                Number.isNaN(lineNumber) || lineNumber == null ) return 
-
-            const brackets = this.textModel.getLineContent(lineNumber).match(HCL_REGEX_FUNC.bracket(pairBracket));
+            column = this.textModel.getLineMaxColumn(lineNumber)
             
+            let startColumn = this.textModel.getLineMinColumn(lineNumber)
+            if (lineNumber == position.lineNumber) {
+                column = position.column
+                startColumn = position.column
+            }          
+
+            const range = {
+                startLineNumber: lineNumber,
+                endLineNumber: lineNumber,
+                startColumn: startColumn,
+                endColumn: column
+            }
+
+            const brackets = this.textModel.getValueInRange(range).match(HCL_REGEX_FUNC.bracket(pairBracket));
             if (brackets != null) {
                 brackets.reverse().forEach(bracket => {
-                    const isUp = direction === Direction.up;
-                    bracketcount += (bracket === (isUp ? pairBracket.open : pairBracket.close)) ? -1 : 1;
+                    bracketcount += (bracket === (!isDown ? pairBracket.open : pairBracket.close)) ? -1 : 1;
                 });
             }
         }
@@ -174,7 +188,7 @@ class HclParser {
                             │                   │
                             │      ◄────────────┘
     */
-    
+
     listNestedScopes() : string[] {
         const scopes : string[] = []
         const blocks = this.findParentBlocks()
@@ -184,7 +198,15 @@ class HclParser {
         })
 
         let attributeType;
-        const lineContent = this.textModel.getLineContent(this.position.lineNumber)
+        const range : monaco.IRange = {
+            startLineNumber: this.position.lineNumber,
+            endLineNumber: this.position.lineNumber,
+            startColumn: this.textModel.getLineMinColumn(this.position.lineNumber),
+            endColumn: this.position.column,
+
+        }
+
+        const lineContent = this.textModel.getValueInRange(range)
         while ((attributeType = HCL_REGEX.attributeType.exec(lineContent)) !== null) {
             scopes.push(attributeType[1])
         }
@@ -231,23 +253,12 @@ class HclParser {
         const scopes : string[] = []
         let match;
 
-        const rawPath = this.textModel.getLineContent(this.position.lineNumber).match(HCL_REGEX.rawPath)[0]
-        while ((match = HCL_REGEX.path.exec(rawPath)) !== null) {
+        const rawPath = this.textModel.getLineContent(this.position.lineNumber).match(HCL_REGEX.rawPath)
+        while (rawPath != null && (match = HCL_REGEX.path.exec(rawPath[0])) !== null) {
             scopes.push(match[1])
         }
-        
+    
         return scopes
-    }
-
-    // 1 = Outer | 2 = Inter | 0 = undefined
-    compareRange(src : monaco.IRange, dst : monaco.IRange) : number {
-        if (src.startLineNumber <= dst.startLineNumber && src.endLineNumber >= dst.endLineNumber) {
-            return 1
-        } else if (src.startLineNumber >= dst.startLineNumber && src.endLineNumber <= dst.endLineNumber) {
-            return 2
-        } else {
-            return 0
-        }
     }
 
     /*
@@ -284,15 +295,19 @@ class HclParser {
                 })
 
                 if (referencedBlockValues[0] != null) {
+                    const endColumnOfLine = this.textModel.getLineMaxColumn(referencedBlockValues[0].range.startLineNumber) + 1
                     const positonAtRegexMatch = new monaco.Position(
                         referencedBlockValues[0].range.startLineNumber, 
-                        referencedBlockValues[0].range.endColumn);
+                        endColumnOfLine);
 
-                    currentRange = new monaco.Range(
+                    const nextSearchedRange = new monaco.Range(
                         referencedBlockValues[0].range.startLineNumber,
-                        referencedBlockValues[0].range.startColumn, 
+                        endColumnOfLine, 
                         this.findParentBracket(PairCurlyBracket, positonAtRegexMatch, 1, Direction.down),
-                        this.textModel.getLineMaxColumn(currentRange.endLineNumber ))     
+                        this.textModel.getLineMinColumn(currentRange.endLineNumber))
+
+                    currentRange = nextSearchedRange
+                        
                 }
 
                 referencedBlockValues = []
@@ -307,6 +322,5 @@ class HclParser {
 
         return values
     }
-}
 
-export default HclParser
+}
