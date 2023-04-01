@@ -71,6 +71,7 @@ const monaco = {
         tokenize: jest.fn()
     }
 }
+
 const textModel = {
     getValue: jest.fn(()=> content),
     getLineContent: jest.fn((lineNumber)=>{
@@ -198,7 +199,9 @@ const editor = {
             ]
         })
     }),
-    onDidPaste: jest.fn()
+    onDidPaste: jest.fn((func) =>{
+        func()
+    })
 }
 
 /*

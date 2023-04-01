@@ -12,7 +12,7 @@ import { schema, schemaConfig } from "../testdata/hcltmpl"
 const linterProvider = (langId) => {
     const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
     const hclTokenizer = new HCLTokenizer(mocks.monaco)
-    
+
     const linter = new Linter(hclNavigator, hclTokenizer)
     return linter
 }
@@ -30,9 +30,10 @@ describe('editor', () => {
 
         editor.init()
 
-        expect(lintAll).toHaveBeenCalledTimes(2)
+        expect(lintAll).toHaveBeenCalledTimes(3)
         expect(mocks.editor.onDidChangeModelContent).toHaveBeenCalledTimes(1)
         expect(mocks.editor.onDidChangeModelLanguage).toHaveBeenCalledTimes(1)
+        expect(mocks.editor.onDidPaste).toHaveBeenCalledTimes(1)
     })
 
     test('changeLanguage', () => {

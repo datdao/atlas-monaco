@@ -133,7 +133,8 @@ class Linter {
     }
 
     findSkippedRanges(textModel: monaco.editor.ITextModel) : monaco.IRange[] {
-        return this.hclTokenizer.getRangesByTokenType(textModel, [TokenType.empty, TokenType.string, TokenType.comment])
+        const ranges = this.hclTokenizer.getRangesByTokenType(textModel, [TokenType.empty, TokenType.string, TokenType.comment])
+        return ranges
     }
 
     buildWarningMarker(range: monaco.IRange, msg: string) {

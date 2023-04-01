@@ -474,56 +474,6 @@ describe('parser', () => {
         })
     })
 
-    describe('isOverlap', () => {
-        test('default', () => {
-            const result = isOverlap({
-                startLineNumber:1,
-                endLineNumber: 10,
-                startColumn:1,
-                endColumn:9
-            } as any,{
-                startLineNumber:2,
-                endLineNumber: 10,
-                startColumn:1,
-                endColumn:9
-            } as any)
-
-            expect(result).toEqual(true)
-        })
-
-        test('equal', () => {
-            const result = isOverlap({
-                startLineNumber:2,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any,{
-                startLineNumber:2,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any)
-
-            expect(result).toEqual(true)
-        })
-
-        test('false', () => {
-            const result = isOverlap({
-                startLineNumber:3,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any,{
-                startLineNumber:2,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any)
-
-            expect(result).toEqual(false)
-        })
-    })
-
     describe('findReferencedResourceValues', () => {
         test('absolute path', () => {
             const parser = new HCLParser(

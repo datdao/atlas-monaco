@@ -4,10 +4,10 @@ import Linter from "../../../atlashcl/linter";
 import { errors } from "../../../atlashcl/linter/errors";
 
 import { schema, schemaConfig } from "../../testdata/hcltmpl"
-import { emptyTextModel, textModel, monaco } from "../../testdata/model";
+import * as mocks from "../../testdata/model";
 
 const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
-const hclTokenizer = new HCLTokenizer(monaco as any)
+const hclTokenizer = new HCLTokenizer(mocks.monaco as any)
 const linter = new Linter(hclNavigator, hclTokenizer)
 
 it('Runs without crashing', () => {});
@@ -27,7 +27,7 @@ describe('linter', () => {
                 startLineNumber : 3,
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(linter.buildWarningMarker(range, errors.nonCompliantAttr("table", "schema")))
         })
 
@@ -37,7 +37,7 @@ describe('linter', () => {
                 column: 28
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(undefined)
         })
 
@@ -47,7 +47,7 @@ describe('linter', () => {
                 column: 9
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(undefined)
         })
 
@@ -57,7 +57,7 @@ describe('linter', () => {
                 column: 43
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(undefined)
         })
 
@@ -67,7 +67,7 @@ describe('linter', () => {
                 column: 38
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(undefined)
         })
 
@@ -84,7 +84,7 @@ describe('linter', () => {
                 startLineNumber : 5,
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(linter.buildWarningMarker(range, errors.nonCompliantValue("type", "integer")))
         })
 
@@ -94,7 +94,7 @@ describe('linter', () => {
                 column: 39
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(undefined)
         })
 
@@ -104,7 +104,7 @@ describe('linter', () => {
                 column: 21
             }
     
-            const decoration = linter.validateNonCompliantWord(textModel as any, position as any)
+            const decoration = linter.validateNonCompliantWord(mocks.textModel as any, position as any)
             expect(decoration).toEqual(linter.buildWarningMarker(
                 {"endColumn": 24, "endLineNumber": 40, "startColumn": 21, "startLineNumber": 40},
                 errors.nonCompliantResource("var")))
@@ -114,13 +114,27 @@ describe('linter', () => {
 
     describe('nonComplaintWordAll', () => {
         test('default', () => {
-            const decorations = linter.validateNonCompliantWordAll(textModel as any)
+            const decorations = linter.validateNonCompliantWordAll(mocks.textModel as any)
             expect(decorations.length).toEqual(33)
         })
 
         test('return empty array', () => {
-            const decorations = linter.validateNonCompliantWordAll(emptyTextModel as any)
+            const decorations = linter.validateNonCompliantWordAll(mocks.emptyTextModel as any)
             expect(decorations).toEqual([])
+        })
+
+        test('have skippedRanges', () => {
+            const findSkippedRangesSpy = jest.spyOn(linter, 'findSkippedRanges');
+            findSkippedRangesSpy.mockReturnValue([
+                {
+                    startLineNumber: 2,
+                    startColumn: 26,
+                    endLineNumber: 2,
+                    endColumn: 33
+                }
+            ]);
+            const decorations = linter.validateNonCompliantWordAll(mocks.textModel as any)
+            expect(decorations.length).toEqual(32)
         })
     })
 
@@ -133,12 +147,27 @@ describe('linter', () => {
                 startLineNumber : 5,
             }
     
-            const decorations = linter.validateNonCompliantWordLine(textModel as any, 5)
+            const decorations = linter.validateNonCompliantWordLine(mocks.textModel as any, 5)
             expect(decorations).toEqual([linter.buildWarningMarker(range, errors.nonCompliantValue("type", "integer"))])
         })
 
         test('empty line', () => {    
-            const decorations = linter.validateNonCompliantWordLine(textModel as any, 11)
+            const decorations = linter.validateNonCompliantWordLine(mocks.textModel as any, 11)
+            expect(decorations).toEqual([])
+        })
+
+        test('have skippedRanges', () => {
+            const findSkippedRangesSpy = jest.spyOn(linter, 'findSkippedRanges');
+            findSkippedRangesSpy.mockReturnValue([
+                {
+                    startLineNumber: 5,
+                    startColumn: 34,
+                    endLineNumber: 5,
+                    endColumn: 43
+                }
+            ]);
+    
+            const decorations = linter.validateNonCompliantWordLine(mocks.textModel as any, 5)
             expect(decorations).toEqual([])
         })
     })

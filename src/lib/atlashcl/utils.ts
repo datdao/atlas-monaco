@@ -12,13 +12,16 @@ function isOverlap(src : monaco.IRange, dst : monaco.IRange) : boolean {
 }
 
 function isPositionInsideRange(position : monaco.IPosition, range: monaco.IRange) : boolean {
-    if (position.lineNumber >=  range.startLineNumber && 
-        position.lineNumber <= range.endLineNumber &&
-        position.column >= range.startColumn &&
-        position.column <= range.endColumn ) {
-             return true
-        }
-    return false
+    if (position.lineNumber < range.startLineNumber || position.lineNumber > range.endLineNumber) {
+        return false;
+    }
+    if (position.lineNumber === range.startLineNumber && position.column < range.startColumn) {
+        return false;
+    }
+    if (position.lineNumber === range.endLineNumber && position.column > range.endColumn) {
+        return false;
+    }
+    return true;
 }
 
 export {

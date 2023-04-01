@@ -20,7 +20,7 @@ export class HCLTokenizer {
         const tokens = this.monaco.editor.tokenize(textModel.getValue(), textModel.getLanguageId())
         const tokenRanges : Record<string, Monaco.IRange[]> = {}
         if (tokens == null) return tokenRanges
-
+ 
         tokens.forEach((lineTokens, idx) => {
             const lineNumber = idx + 1
             if (lineTokens.length == 0) {
@@ -28,7 +28,7 @@ export class HCLTokenizer {
                 return
             }
 
-            if (lineTokens.length == 1) {
+            if (lineTokens.length == 1) { 
                 this.setValueToTokenRanges(
                     tokenRanges, 
                     lineTokens[0].type, 
@@ -44,7 +44,7 @@ export class HCLTokenizer {
                         new Monaco.Range(lineNumber, lineTokens[index].offset + 1, lineNumber, textModel.getLineMaxColumn(lineNumber)))
                         break
                 }
-
+                
                 this.setValueToTokenRanges(
                     tokenRanges, 
                     lineTokens[index].type, 
@@ -58,6 +58,7 @@ export class HCLTokenizer {
     setValueToTokenRanges(tokenRanges : Record<string, Monaco.IRange[]> = {}, tokenType: string, range: Monaco.IRange) {
         if (tokenRanges[tokenType] == null) {
             tokenRanges[tokenType] = [range]
+            return
         }
 
         tokenRanges[tokenType].push(range)
