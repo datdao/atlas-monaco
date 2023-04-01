@@ -3,9 +3,9 @@ import Schema, {schemaConfig} from "./atlashcl/templates/schema";
 import Config from "./atlashcl/templates/config";
 import AtlasHCL from "./atlashcl";
 import CodeCompletion from "./atlashcl/codecompletion";
-import Tokenizer from "./atlashcl/tokenizer";
 import * as Monaco from 'monaco-editor';
 import { HCLNavigator } from "./atlashcl/hcl/navigator";
+import { HCLTokenizer } from "./atlashcl/hcl/tokenizer";
 import Linter from "./atlashcl/linter";
 import Editor from "./atlashcl/editor";
 
@@ -99,11 +99,11 @@ type Registry = {
 let langInternalRegistry : Record<string, Registry> = {}
 
 const linterProvider = (monaco : typeof Monaco) => {
-  const tokenizer  = new Tokenizer(monaco)
+  const hclTokenizer  = new HCLTokenizer(monaco)
   
   return (langId: string) => {
     const hclNavigator = langInternalRegistry[langId]?.hclNavigator
-    return  new Linter(hclNavigator, tokenizer)
+    return  new Linter(hclNavigator, hclTokenizer)
   }
 }
 

@@ -1,17 +1,19 @@
 import Editor from "../../atlashcl/editor"
 import * as mocks from "../testdata/model";
 import { HCLNavigator } from "../../atlashcl/hcl/navigator";
+import { HCLTokenizer } from "../../atlashcl/hcl/tokenizer";
 import Linter from "../../atlashcl/linter";
 import { schema, schemaConfig } from "../testdata/hcltmpl"
-import Tokenizer from "../../atlashcl/tokenizer";
+
 
 
 
 // eslint-disable-next-line no-unused-vars
 const linterProvider = (langId) => {
     const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
-    const tokenizer = new Tokenizer(mocks.monaco)
-    const linter = new Linter(hclNavigator, tokenizer)
+    const hclTokenizer = new HCLTokenizer(mocks.monaco)
+    
+    const linter = new Linter(hclNavigator, hclTokenizer)
     return linter
 }
 

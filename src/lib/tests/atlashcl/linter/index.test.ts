@@ -1,13 +1,14 @@
 import { HCLNavigator } from "../../../atlashcl/hcl/navigator";
+import { HCLTokenizer } from "../../../atlashcl/hcl/tokenizer";
 import Linter from "../../../atlashcl/linter";
 import { errors } from "../../../atlashcl/linter/errors";
-import Tokenizer from "../../../atlashcl/tokenizer";
+
 import { schema, schemaConfig } from "../../testdata/hcltmpl"
 import { emptyTextModel, textModel, monaco } from "../../testdata/model";
 
 const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
-const tokenizer = new Tokenizer(monaco as any)
-const linter = new Linter(hclNavigator, tokenizer)
+const hclTokenizer = new HCLTokenizer(monaco as any)
+const linter = new Linter(hclNavigator, hclTokenizer)
 
 it('Runs without crashing', () => {});
 

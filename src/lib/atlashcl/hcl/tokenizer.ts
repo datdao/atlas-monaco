@@ -9,7 +9,7 @@ export const enum TokenType {
     comment = "comment.hcl"
 }
 
-export default class Tokenizer {
+export class HCLTokenizer {
     private monaco : typeof Monaco
     
     constructor(monaco : typeof Monaco) {

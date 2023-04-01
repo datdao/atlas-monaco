@@ -3,25 +3,25 @@ import * as monaco from 'monaco-editor';
 import { errors } from "./errors";
 import { HCLParser } from "../hcl/parser";
 import { isOverlap, isPositionInsideRange } from "../utils";
-import { TokenType } from "../tokenizer";
+import { TokenType } from "../hcl/tokenizer";
 
 interface IHCLNavigator {
 	// eslint-disable-next-line no-unused-vars
 	listSuggestionByNestedScopes(nestedScopes: string[]) : Suggestion[]
 }
 
-interface ITokennizer {
+interface ITokenizer {
 	// eslint-disable-next-line no-unused-vars
 	getRangesByTokenType(textModel : monaco.editor.ITextModel, tokenTypes : TokenType[]) : monaco.IRange[]
 }
 
 class Linter {
     private hclNavigator: IHCLNavigator
-    private tokenizer: ITokennizer
+    private hclTokenizer: ITokenizer
 
-    constructor(hclNavigator : IHCLNavigator, tokenizer: ITokennizer) {
+    constructor(hclNavigator : IHCLNavigator, hclTokenizer: ITokenizer) {
 		this.hclNavigator = hclNavigator
-        this.tokenizer = tokenizer
+        this.hclTokenizer = hclTokenizer
 	}
 
     validateNonCompliantWord(textModel: monaco.editor.ITextModel, position : monaco.Position) :  monaco.editor.IModelDeltaDecoration {
@@ -133,7 +133,7 @@ class Linter {
     }
 
     findSkippedRanges(textModel: monaco.editor.ITextModel) : monaco.IRange[] {
-        return this.tokenizer.getRangesByTokenType(textModel, [TokenType.empty, TokenType.string, TokenType.comment])
+        return this.hclTokenizer.getRangesByTokenType(textModel, [TokenType.empty, TokenType.string, TokenType.comment])
     }
 
     buildWarningMarker(range: monaco.IRange, msg: string) {
