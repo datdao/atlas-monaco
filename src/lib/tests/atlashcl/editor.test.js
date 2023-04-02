@@ -5,10 +5,6 @@ import { HCLTokenizer } from "../../atlashcl/hcl/tokenizer";
 import Linter from "../../atlashcl/linter";
 import { schema, schemaConfig } from "../testdata/hcltmpl"
 
-
-
-
-// eslint-disable-next-line no-unused-vars
 const linterProvider = (langId) => {
     const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
     const hclTokenizer = new HCLTokenizer(mocks.monaco)

@@ -6,12 +6,10 @@ import { isOverlap, isPositionInsideRange } from "../utils";
 import { TokenType } from "../hcl/tokenizer";
 
 interface IHCLNavigator {
-	// eslint-disable-next-line no-unused-vars
 	listSuggestionByNestedScopes(nestedScopes: string[]) : Suggestion[]
 }
 
 interface ITokenizer {
-	// eslint-disable-next-line no-unused-vars
 	getRangesByTokenType(textModel : monaco.editor.ITextModel, tokenTypes : TokenType[]) : monaco.IRange[]
 }
 

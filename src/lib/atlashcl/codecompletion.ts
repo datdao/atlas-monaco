@@ -4,7 +4,6 @@ import { ICodeCompletion } from '.';
 import { Suggestion, SuggestionType } from './hcl/hcl';
 
 interface IHCLNavigator {
-	// eslint-disable-next-line no-unused-vars
 	listSuggestionByNestedScopes(nestedScopes: string[]) : Suggestion[]
 }
 

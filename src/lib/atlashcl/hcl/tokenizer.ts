@@ -1,11 +1,8 @@
 import * as Monaco from 'monaco-editor';
 
 export const enum TokenType {
-    // eslint-disable-next-line no-unused-vars
     empty = "",
-    // eslint-disable-next-line no-unused-vars
     string = "string.hcl",
-    // eslint-disable-next-line no-unused-vars
     comment = "comment.hcl"
 }
 

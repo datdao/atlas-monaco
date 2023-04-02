@@ -1,4 +1,4 @@
-import { AutoRegister, linterProvider, ConnectReactEditor } from '../index';
+import { AutoRegister, linterProvider, ConnectEditor } from '../index';
 import * as monaco from 'monaco-editor'
 import * as mocks from './testdata/model';
 
@@ -20,7 +20,7 @@ describe('index', () => {
   
   describe('ConnectReactEditor', () => {
     it('Runs without crashing', () => {
-      ConnectReactEditor(mocks.editor as any, mocks.monaco as any)      
+      ConnectEditor(mocks.monaco as any, mocks.editor as any)      
     });
   })
 })

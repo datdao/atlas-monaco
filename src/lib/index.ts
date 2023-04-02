@@ -95,8 +95,7 @@ type Registry = {
   hclNavigator: HCLNavigator,
 }
 
-// eslint-disable-next-line prefer-const
-let langInternalRegistry : Record<string, Registry> = {}
+const langInternalRegistry : Record<string, Registry> = {}
 
 const linterProvider = (monaco : typeof Monaco) => {
   const hclTokenizer  = new HCLTokenizer(monaco)
@@ -107,7 +106,7 @@ const linterProvider = (monaco : typeof Monaco) => {
   }
 }
 
-function ConnectReactEditor(editor : Monaco.editor.IStandaloneCodeEditor, monaco : typeof Monaco) {
+function ConnectEditor(monaco : typeof Monaco, editor : Monaco.editor.IStandaloneCodeEditor) {
   const atlasHclEditor = new Editor(editor, linterProvider(monaco))
   atlasHclEditor.init()
 }
@@ -122,6 +121,6 @@ export {
   RegisterSchema,
   RegisterConfig,
   RegisterBase,
-  ConnectReactEditor,
+  ConnectEditor,
   linterProvider
 }

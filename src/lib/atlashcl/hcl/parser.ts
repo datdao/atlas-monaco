@@ -44,9 +44,7 @@ export const HCL_REGEX_FUNC = {
 }
 
 export const enum Direction {
-    // eslint-disable-next-line no-unused-vars
     up = "up",
-    // eslint-disable-next-line no-unused-vars
     down = "down"
 }
 

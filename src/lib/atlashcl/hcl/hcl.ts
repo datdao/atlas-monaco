@@ -1,9 +1,6 @@
 enum SuggestionType {
-    // eslint-disable-next-line no-unused-vars
     block = "block",
-    // eslint-disable-next-line no-unused-vars
     attribute = "attribute",
-    // eslint-disable-next-line no-unused-vars
     attributeValue = "attribute_value",
 }
 

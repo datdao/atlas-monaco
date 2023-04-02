@@ -37,7 +37,7 @@ function HCLSchemaEditor() {
 
     function handleEditorDidMount(editor, monaco) {
         AtlasHCL.AutoRegister(monaco)
-        AtlasHCL.ConnectReactEditor(editor, monaco)
+        AtlasHCL.ConnectEditor(monaco, editor)
     }
 
     const text = `

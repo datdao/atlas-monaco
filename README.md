@@ -49,8 +49,8 @@ import Editor from "@monaco-editor/react";
 
 function HCLSchemaEditor() {
     function handleEditorDidMount(editor, monaco) {
-        AtlasHCL.AutoRegister(monaco)
-        AtlasHCL.ConnectReactEditor(editor, monaco)
+        AtlasHCL.AutoRegister(monaco) 
+        AtlasHCL.ConnectEditor(monaco, editor)
     }
 
     return (
@@ -90,7 +90,7 @@ const languages = [
 ## Contrib
 
 ### Custom SQL Resource 
-The configuration file is located at data/sql.ts. Follow these steps to configure the SQL resources:
+The configuration file is located at [Templates](./src/lib/atlashcl//templates/). Follow these steps to configure the SQL resources:
 
 - Use an object with key-value pairs to define a resource.
 - Use a string with Attribute + Value to define a simple completion item.
