@@ -1,3 +1,5 @@
+require('jest-canvas-mock')
+
 module.exports = {
     Position: jest.fn((lineNumber, column) => {
         return {

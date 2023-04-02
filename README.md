@@ -27,6 +27,10 @@ Users are able to search for attributes from multiple data blocks while working 
 
 ![Code Completion Demo](assets/references.gif)
 
+### Linter
+This feature allows for safer typing when defining a schema or configuring an Atlas project, as it uses a linter to check for errors while the user types. It will also warn the user if they type a word that does not follow the specified template.
+
+![Linter Demo](assets/linter.gif)
 
 ## Installation
 
@@ -36,62 +40,57 @@ npm install atlas-monaco
 
 ## Usage
 
-### Auto Register AtlasHCL
+### Register AtlasHCL With React (@monaco-editor/react)
 
 ```ts
-import { AutoRegisterToMonaco } from "../lib";
-import { Dialect } from "../lib/dialect";
+import * as AtlasHCL from "../../lib";
+import Editor from "@monaco-editor/react";
 
-AutoRegisterToMonaco(Dialect.sql)
 
-```
+function HCLSchemaEditor() {
+    function handleEditorDidMount(editor, monaco) {
+        AtlasHCL.AutoRegister(monaco) 
+        AtlasHCL.ConnectEditor(monaco, editor)
+    }
 
-By using the AutoRegisterToMonaco() function, all configurations will be registered, including tokens, extensions, and completion providers.
+    return (
+        <div>
+            <Editor
+                onMount={handleEditorDidMount}
+                options={{
+                    wordBasedSuggestions: false
+                }}
+            />
+        </div>
 
-### Manual Register AtlasHCL
-
-```ts
-
-const atlashcl = new AtlasHCL(dialect)
+    );
+  }
   
-  // Register new language 
-  monaco.languages.register({
-    id: atlashcl.getLanguageName(),
-    extensions: atlashcl.getLanguageExt()
-  })
-
-  // Set Tokenizer vs Language config
-  monaco.languages.setLanguageConfiguration(
-    atlashcl.getLanguageName(), 
-    atlashcl.getLanguageConf())
-
-  monaco.languages.setMonarchTokensProvider(
-    atlashcl.getLanguageName(), 
-    atlashcl.getTokenProvider()
-  )
-
-  // Register completion logic
-  monaco.languages.registerCompletionItemProvide(
-    atlashcl.getLanguageName(),
-    atlashcl.getCompletionProvider()
-  )
+  export default HCLSchemaEditor;
 
 ```
 
-### Change Sql Dialect
+After the ReactEditor has been rendered, we can use `AtlasHCL.ConnectReactEditor()` to connect it with AtlasHCL. [Full Example](./src/demo/editor/schema.tsx)
+
+### Change SQL Dialect
 
 ```ts
 
-const { registerCompletionItemProvider } = AutoRegisterToMonaco(Dialect.sql)
+import * as AtlasHCL from "../../lib";
+
+// Select options with value are languague IDs provide by AtlasHCL
+const languages = [
+    {value: AtlasHCL.langIds.schema.sqlite, label: "sqlite"},
+    {value: AtlasHCL.langIds.schema.mysql, label: "mysql"},
+    {value: AtlasHCL.langIds.schema.postgresql, label: "postgresql"}
+];
 
 ```
-
-After using the provided function from the library, it will provide the ability to safely dispose and register again.
 
 ## Contrib
 
 ### Custom SQL Resource 
-The configuration file is located at data/sql.ts. Follow these steps to configure the SQL resources:
+The configuration file is located at [Templates](./src/lib/atlashcl//templates/). Follow these steps to configure the SQL resources:
 
 - Use an object with key-value pairs to define a resource.
 - Use a string with Attribute + Value to define a simple completion item.
@@ -137,36 +136,5 @@ mysql: {
                     where: dataType.string,
                     ...
 
-```
-
-### Project Structure
-
-```
-src
- ┣ demo
- ┃ ┣ index.css
- ┃ ┗ index.ts
- ┗ lib
- ┃ ┣ autocompletion
- ┃ ┃ ┣ hclparser.ts
- ┃ ┃ ┗ index.ts
- ┃ ┣ data
- ┃ ┃ ┗ sql.ts
- ┃ ┣ tests
- ┃ ┃ ┣ autocompletion
- ┃ ┃ ┃ ┣ testdata
- ┃ ┃ ┃ ┃ ┣ hcltmpl.ts
- ┃ ┃ ┃ ┃ ┣ model.ts
- ┃ ┃ ┃ ┃ ┗ regex.ts
- ┃ ┃ ┃ ┣ hclparser.test.ts
- ┃ ┃ ┃ ┗ index.test.ts
- ┃ ┃ ┣ atlashcl.test.ts
- ┃ ┃ ┣ dialect.test.ts
- ┃ ┃ ┗ index.test.ts
- ┃ ┣ atlashcl.ts
- ┃ ┣ config.ts
- ┃ ┣ dialect.ts
- ┃ ┣ index.ts
- ┃ ┗ monaco-hcl.d.ts
 ```
 

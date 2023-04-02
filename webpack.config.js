@@ -54,7 +54,7 @@ module.exports = {
         test: /\.(sa|sc|c)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
-          { loader: "css-loader", options: { sourceMap: true } },
+          { loader: "css-loader", options: { sourceMap: true }},
         ],
       }
     ]
@@ -67,5 +67,5 @@ module.exports = {
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']
-  }
+  },
 };

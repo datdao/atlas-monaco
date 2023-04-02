@@ -88,6 +88,8 @@ export default {
                 as: {
                     type: ["STORED", "PERSISTENT", "VIRTUAL"]
                 },
+                null: dataType.bool,
+                unsigned: dataType.bool,
                 auto_increment: dataType.bool,
                 comment: dataType.string,
                 type: [
@@ -103,7 +105,7 @@ export default {
                     "decimal",
                     dataType.func("decimal", [dataType.number]),
                     dataType.func("decimal", [dataType.number, dataType.number]),
-                    "numberic",
+                    "numeric",
                     "float",
                     "double",
                     "real",
@@ -155,7 +157,7 @@ export default {
         },
 
         table: {
-            schema: dataType.string,
+            schema: dataType.ref,
             charset: dataType.string,
             collate: dataType.string,
             comment: dataType.string,
@@ -183,6 +185,7 @@ export default {
             column: {
                 auto_increment: dataType.bool,
                 comment: dataType.string,
+                null: dataType.bool,
                 type: [
                     "blob",
                     "int",
@@ -193,7 +196,8 @@ export default {
                     "date",
                     "datetime",
                     "uuid",
-                    "json"
+                    "json",
+                    "integer"
                 ]
             }
         }
@@ -244,6 +248,7 @@ export default {
                 auto_increment: dataType.bool,
                 collate: dataType.string,
                 comment: dataType.string,
+                null: dataType.bool,
                 indentify: {
                     generated: ["ALWAYS", "BY_DEFAULT"],
                     start: dataType.number,
@@ -262,9 +267,9 @@ export default {
                     "timestamptz",
                     dataType.func("timestamp", [dataType.string]),
                     "interval",
-                    "numberic",
-                    dataType.func("numberic", [dataType.number]),
-                    dataType.func("numberic", [dataType.number, dataType.number]),
+                    "numeric",
+                    dataType.func("numeric", [dataType.number]),
+                    dataType.func("numeric", [dataType.number, dataType.number]),
                     "real",
                     "double_precision",
                     dataType.func("float", [dataType.number]),
@@ -303,6 +308,7 @@ export default {
                     "bigserial",
                     "varchar",
                     dataType.func("varchar", [dataType.ref]),
+                    dataType.func("character_varying", [dataType.number]),
                     "char",
                     dataType.func("char", [dataType.string]),
                     "text",

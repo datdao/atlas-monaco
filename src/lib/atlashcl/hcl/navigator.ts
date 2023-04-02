@@ -1,10 +1,9 @@
-import { Suggestion, SuggestionType } from "../hcl"
+import { Suggestion, SuggestionType } from "./hcl"
 
 export class HCLNavigator {
     private tmpl: any
     private tmplConf: Record<any, any> = {}
     private scopeSuggestions: Record<string, Suggestion[]> = {}
-
 
     constructor(tmpl : any, tmplConf : any = null) {
         this.tmpl = tmpl
@@ -34,13 +33,15 @@ export class HCLNavigator {
 					// Push Attribute completion Items
                     this.setScopeSuggestion(definedScopes, key, SuggestionType.attribute, config)
 					
-					
 					Object.entries(value).forEach(([idx]) => {
                         this.setScopeSuggestion(nestedScopes, value[idx],SuggestionType.attributeValue)
 					})
 					break;
 				case '[object String]':
-                    this.setScopeSuggestion(definedScopes, key, SuggestionType.attribute)
+                    this.setScopeSuggestion(definedScopes, key, SuggestionType.attribute, {
+                        autoGenValue: value
+                    })
+
                     this.setScopeSuggestion(nestedScopes, value as string, SuggestionType.attributeValue)
 					break;
 			}
@@ -72,6 +73,6 @@ export class HCLNavigator {
     }
 
 	listSuggestionByNestedScopes(nestedScopes : string[]) : Suggestion[] {
-        return this.scopeSuggestions[nestedScopes.join(".")]
+        return this.scopeSuggestions[nestedScopes.join(".")] ?? []
     }
 }

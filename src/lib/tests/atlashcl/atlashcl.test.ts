@@ -1,6 +1,6 @@
-import AtlasHCL from "../.."
+import AtlasHCL from "../../atlashcl"
 import CodeCompletion from "../../atlashcl/codecompletion"
-import { HCLNavigator } from "../../atlashcl/hclnavigator"
+import { HCLNavigator } from "../../atlashcl/hcl/navigator"
 import { schema, schemaConfig } from "../testdata/hcltmpl"
 
 const hclNavigator = new HCLNavigator(schema.sqlite, schemaConfig)
@@ -47,7 +47,7 @@ describe('atlashcl', () => {
 
     test('new atlas with custom code completion', () => {
         const atlashcl = new AtlasHCL(codeCompletionMock)
-        atlashcl.getCompletionProvider()
-        expect(codeCompletionMock.getProvider).toBeCalled
+        atlashcl.getCodeCompletionProvider()
+        expect(codeCompletionMock.getProvider).toBeCalled()
     })
 })

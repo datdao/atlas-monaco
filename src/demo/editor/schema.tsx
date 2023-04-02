@@ -30,10 +30,56 @@ const languages = [
 
 function HCLSchemaEditor() {
     const [selectedOption, setSelectedOption] = useState(languages[0]);
-
+    
     const handleChange = (option) => {
         setSelectedOption(option)
     };
+
+    function handleEditorDidMount(editor, monaco) {
+        AtlasHCL.AutoRegister(monaco)
+        AtlasHCL.ConnectEditor(monaco, editor)
+    }
+
+    const text = `
+/*
+
+    SQL RESOURCES
+
+*/
+
+table "logs" {
+    schema = schema.public
+    column "date" {
+        type = date
+    }
+    column "text" {
+        type = integer
+    }
+    partition {
+        type = RANGE
+        columns = [column.date]
+    }
+}
+
+table "metrics" {
+    schema = schema.public
+    column "x" {
+        type = integer
+    }
+    column "y" {
+        type = integer
+    }
+    partition {
+        type = RANGE
+        by {
+            column = column.x
+        }
+        by {
+            expr = "floor(y)"
+        }
+    }
+}    
+    `
 
     return (
         <div>
@@ -50,7 +96,11 @@ function HCLSchemaEditor() {
                 height="90vh"
                 language={selectedOption.value}
                 defaultLanguage= {languages[0].value}
-                defaultValue="// https://atlasgo.io/atlas-schema/sql-resources"
+                defaultValue={text}
+                onMount={handleEditorDidMount}
+                options={{
+                    wordBasedSuggestions: false
+                }}
             />
         </div>
 

@@ -4,7 +4,10 @@ import Config from "./atlashcl/templates/config";
 import AtlasHCL from "./atlashcl";
 import CodeCompletion from "./atlashcl/codecompletion";
 import * as Monaco from 'monaco-editor';
-import { HCLNavigator } from "./atlashcl/hclnavigator";
+import { HCLNavigator } from "./atlashcl/hcl/navigator";
+import { HCLTokenizer } from "./atlashcl/hcl/tokenizer";
+import Linter from "./atlashcl/linter";
+import Editor from "./atlashcl/editor";
 
 const langIdConf = {
   prefix: "atlashcl",
@@ -15,67 +18,53 @@ function genSchemaLangId(name : string) {
   return [langIdConf.prefix, "schema", name].join(langIdConf.sep)
 }
 
-function genConfigLangId(name : string) {
-  return [langIdConf.prefix, "config", name].join(langIdConf.sep)
+function genConfigLangId() {
+  return [langIdConf.prefix, "config"].join(langIdConf.sep)
 }
 
 // List of language ids that Atlashcl supports
-export const langIds = {
+const langIds = {
   schema: {
     sqlite: genSchemaLangId(Dialect.sqlite),
     mysql: genSchemaLangId(Dialect.mysql),
     postgresql: genSchemaLangId(Dialect.postgresql),
   },
-  config: genConfigLangId("")
+  config: genConfigLangId()
 }
 
 // Register all languages that atlashcl supports to the monaco instance 
-export function AutoRegister(monaco : typeof Monaco) {
-  RegisterSchema(monaco, Dialect.mysql, langIds.schema.mysql)
-  RegisterSchema(monaco, Dialect.postgresql, langIds.schema.postgresql)
-  RegisterSchema(monaco, Dialect.sqlite, langIds.schema.sqlite)
-  RegisterConfig(monaco, langIds.config)
+function AutoRegister(monaco : typeof Monaco) {
+  RegisterSchema(monaco, Dialect.mysql)
+  RegisterSchema(monaco, Dialect.postgresql)
+  RegisterSchema(monaco, Dialect.sqlite)
+  RegisterConfig(monaco)
 }
 
 // Register AtlasHCL Schema to monaco
-function RegisterSchema(monaco : typeof Monaco, dialect : Dialect, langId: string) {
+function RegisterSchema(monaco : typeof Monaco, dialect : Dialect) {
   const hclNavigator = new HCLNavigator(Schema[dialect], schemaConfig)
   const codeCompletion = new CodeCompletion(hclNavigator)
   const atlashcl = new AtlasHCL(codeCompletion)
-
-  // Register new language 
-  monaco.languages.register({
-    id: langId,
-    extensions: atlashcl.getLanguageExt()
-  })
-
-  // Set Tokenizer vs Language config
-  monaco.languages.setLanguageConfiguration(
-    langId, 
-    atlashcl.getLanguageConf())
-  monaco.languages.setMonarchTokensProvider(
-    langId, 
-    atlashcl.getTokenProvider()
-  )
-
-  // Register completion provider
-  monaco.languages.registerCompletionItemProvider(
-    langId,
-    atlashcl.getCompletionProvider()
-  )
-
+  
+  RegisterBase(monaco, atlashcl, genSchemaLangId(dialect))
+  langInternalRegistry[genSchemaLangId(dialect)] = {
+    hclNavigator: hclNavigator
+  }
 }
 
 // Register AtlasHCL Config to monaco
-export function RegisterConfig(monaco: typeof Monaco, langId: string) {
+function RegisterConfig(monaco: typeof Monaco) {
   const hclNavigator = new HCLNavigator(Config)
   const codeCompletion = new CodeCompletion(hclNavigator)
   const atlashcl = new AtlasHCL(codeCompletion)
   
-  RegisterBase(monaco, atlashcl, langId)
+  RegisterBase(monaco, atlashcl, genConfigLangId())
+  langInternalRegistry[genConfigLangId()] = {
+    hclNavigator: hclNavigator
+  }
 }
 
-export function RegisterBase(monaco: typeof Monaco, atlashcl : AtlasHCL, langId : string) {
+function RegisterBase(monaco: typeof Monaco, atlashcl : AtlasHCL, langId : string) {
   // Register new language 
   monaco.languages.register({
     id: langId,
@@ -94,8 +83,44 @@ export function RegisterBase(monaco: typeof Monaco, atlashcl : AtlasHCL, langId 
   // Register completion provider
   monaco.languages.registerCompletionItemProvider(
     langId,
-    atlashcl.getCompletionProvider()
+    atlashcl.getCodeCompletionProvider()
   )
 }
 
-export default AtlasHCL
+/* 
+  ============= Support @monaco-editor/react =============
+*/
+
+type Registry = {
+  hclNavigator: HCLNavigator,
+}
+
+const langInternalRegistry : Record<string, Registry> = {}
+
+const linterProvider = (monaco : typeof Monaco) => {
+  const hclTokenizer  = new HCLTokenizer(monaco)
+  
+  return (langId: string) => {
+    const hclNavigator = langInternalRegistry[langId]?.hclNavigator
+    return  new Linter(hclNavigator, hclTokenizer)
+  }
+}
+
+function ConnectEditor(monaco : typeof Monaco, editor : Monaco.editor.IStandaloneCodeEditor) {
+  const atlasHclEditor = new Editor(editor, linterProvider(monaco))
+  atlasHclEditor.init()
+}
+
+/* 
+  =========================================================
+*/
+
+export {
+  langIds,
+  AutoRegister,
+  RegisterSchema,
+  RegisterConfig,
+  RegisterBase,
+  ConnectEditor,
+  linterProvider
+}

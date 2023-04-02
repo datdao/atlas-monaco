@@ -15,7 +15,8 @@ function HCLConfigEditor() {
             <Editor
                 height="90vh"
                 defaultLanguage={AtlasHCL.langIds.config}
-                defaultValue="// https://atlasgo.io/atlas-schema/projects"
+                defaultValue="// https://atlasgo.io/atlas-schema/projects (developing...)"
+                options={{readOnly: true}}
             />
         </>
     );

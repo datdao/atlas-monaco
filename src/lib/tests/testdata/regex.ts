@@ -25,6 +25,7 @@ const hclRawPath = {
     default: `table.`,
     array: "[table.users, column.users.dw , column.",
     arrayWithEndClosedCharacter: "[table.users, column.users.dw , column.]",
+    withoutDotAtEnd: "[table.users, column.users , column.users.test"
 }
 
 export { 
