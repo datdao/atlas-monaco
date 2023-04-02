@@ -1,76 +1,110 @@
-import * as Monaco from 'monaco-editor';
+import * as Monaco from "monaco-editor";
 
 export const enum TokenType {
-    empty = "",
-    string = "string.hcl",
-    comment = "comment.hcl"
+  empty = "",
+  string = "string.hcl",
+  comment = "comment.hcl",
 }
 
 export class HCLTokenizer {
-    private monaco : typeof Monaco
-    
-    constructor(monaco : typeof Monaco) {
-        this.monaco = monaco
-    }
+  private monaco: typeof Monaco;
 
-    convertTokenToRanges(textModel : Monaco.editor.ITextModel) : Record<string, Monaco.IRange[]> {
-        const tokens = this.monaco.editor.tokenize(textModel.getValue(), textModel.getLanguageId())
-        const tokenRanges : Record<string, Monaco.IRange[]> = {}
-        if (tokens == null) return tokenRanges
- 
-        tokens.forEach((lineTokens, idx) => {
-            const lineNumber = idx + 1
-            if (lineTokens.length == 0) {
-                this.setValueToTokenRanges(tokenRanges, TokenType.empty, new Monaco.Range(lineNumber, 1, lineNumber, 1))
-                return
-            }
+  constructor(monaco: typeof Monaco) {
+    this.monaco = monaco;
+  }
 
-            if (lineTokens.length == 1) { 
-                this.setValueToTokenRanges(
-                    tokenRanges, 
-                    lineTokens[0].type, 
-                    new Monaco.Range(lineNumber, lineTokens[0].offset + 1, lineNumber, textModel.getLineMaxColumn(lineNumber)))
-                return
-            }
+  convertTokenToRanges(
+    textModel: Monaco.editor.ITextModel
+  ): Record<string, Monaco.IRange[]> {
+    const tokens = this.monaco.editor.tokenize(
+      textModel.getValue(),
+      textModel.getLanguageId()
+    );
+    const tokenRanges: Record<string, Monaco.IRange[]> = {};
+    if (tokens == null) return tokenRanges;
 
-            for (let index = 0; index < lineTokens.length; index ++) {
-                if (index == lineTokens.length - 1) {
-                    this.setValueToTokenRanges(
-                        tokenRanges, 
-                        lineTokens[index].type, 
-                        new Monaco.Range(lineNumber, lineTokens[index].offset + 1, lineNumber, textModel.getLineMaxColumn(lineNumber)))
-                        break
-                }
-                
-                this.setValueToTokenRanges(
-                    tokenRanges, 
-                    lineTokens[index].type, 
-                    new Monaco.Range(lineNumber, lineTokens[index].offset + 1, lineNumber, lineTokens[index + 1].offset + 1))
-            }
-        })
+    tokens.forEach((lineTokens, idx) => {
+      const lineNumber = idx + 1;
+      if (lineTokens.length == 0) {
+        this.setValueToTokenRanges(
+          tokenRanges,
+          TokenType.empty,
+          new Monaco.Range(lineNumber, 1, lineNumber, 1)
+        );
+        return;
+      }
 
-        return tokenRanges
-    }
+      if (lineTokens.length == 1) {
+        this.setValueToTokenRanges(
+          tokenRanges,
+          lineTokens[0].type,
+          new Monaco.Range(
+            lineNumber,
+            lineTokens[0].offset + 1,
+            lineNumber,
+            textModel.getLineMaxColumn(lineNumber)
+          )
+        );
+        return;
+      }
 
-    setValueToTokenRanges(tokenRanges : Record<string, Monaco.IRange[]> = {}, tokenType: string, range: Monaco.IRange) {
-        if (tokenRanges[tokenType] == null) {
-            tokenRanges[tokenType] = [range]
-            return
+      for (let index = 0; index < lineTokens.length; index++) {
+        if (index == lineTokens.length - 1) {
+          this.setValueToTokenRanges(
+            tokenRanges,
+            lineTokens[index].type,
+            new Monaco.Range(
+              lineNumber,
+              lineTokens[index].offset + 1,
+              lineNumber,
+              textModel.getLineMaxColumn(lineNumber)
+            )
+          );
+          break;
         }
 
-        tokenRanges[tokenType].push(range)
+        this.setValueToTokenRanges(
+          tokenRanges,
+          lineTokens[index].type,
+          new Monaco.Range(
+            lineNumber,
+            lineTokens[index].offset + 1,
+            lineNumber,
+            lineTokens[index + 1].offset + 1
+          )
+        );
+      }
+    });
+
+    return tokenRanges;
+  }
+
+  setValueToTokenRanges(
+    tokenRanges: Record<string, Monaco.IRange[]> = {},
+    tokenType: string,
+    range: Monaco.IRange
+  ) {
+    if (tokenRanges[tokenType] == null) {
+      tokenRanges[tokenType] = [range];
+      return;
     }
 
-    getRangesByTokenType(textModel : Monaco.editor.ITextModel, tokenTypes : TokenType[]) {
-        const tokenRanges = this.convertTokenToRanges(textModel)
-        let ranges : Monaco.IRange[] = []
+    tokenRanges[tokenType].push(range);
+  }
 
-        Object.keys(tokenRanges).forEach((tokenType) => {
-            if (tokenTypes.includes(tokenType as TokenType)) {
-                ranges = [...ranges, ...tokenRanges[tokenType]]
-            }
-        });
+  getRangesByTokenType(
+    textModel: Monaco.editor.ITextModel,
+    tokenTypes: TokenType[]
+  ) {
+    const tokenRanges = this.convertTokenToRanges(textModel);
+    let ranges: Monaco.IRange[] = [];
 
-        return ranges
-    }
+    Object.keys(tokenRanges).forEach((tokenType) => {
+      if (tokenTypes.includes(tokenType as TokenType)) {
+        ranges = [...ranges, ...tokenRanges[tokenType]];
+      }
+    });
+
+    return ranges;
+  }
 }

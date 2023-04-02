@@ -1,46 +1,45 @@
 import React, { useState } from "react";
 import Editor from "@monaco-editor/react";
-import Select from 'react-select';
+import Select from "react-select";
 import * as AtlasHCL from "../../lib";
 
 const styles = {
-    container: {
-        display: "flex",
-        justifyContent: "center"
-    },
-    title: {
-        padding: 20,
-        fontSize: "x-large",
-        
-    },
-    select: {
-        control: (provided) => ({
-            ...provided,
-            width: "fit-content",
-            marginTop: 15,
-        }),
-    }
-}
+  container: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  title: {
+    padding: 20,
+    fontSize: "x-large",
+  },
+  select: {
+    control: (provided) => ({
+      ...provided,
+      width: "fit-content",
+      marginTop: 15,
+    }),
+  },
+};
 
 const languages = [
-    {value: AtlasHCL.langIds.schema.sqlite, label: "sqlite"},
-    {value: AtlasHCL.langIds.schema.mysql, label: "mysql"},
-    {value: AtlasHCL.langIds.schema.postgresql, label: "postgresql"}
+  { value: AtlasHCL.langIds.schema.sqlite, label: "sqlite" },
+  { value: AtlasHCL.langIds.schema.mysql, label: "mysql" },
+  { value: AtlasHCL.langIds.schema.postgresql, label: "postgresql" },
 ];
 
 function HCLSchemaEditor() {
-    const [selectedOption, setSelectedOption] = useState(languages[0]);
-    
-    const handleChange = (option) => {
-        setSelectedOption(option)
-    };
+  const [selectedOption, setSelectedOption] = useState(languages[0]);
 
-    function handleEditorDidMount(editor, monaco) {
-        AtlasHCL.AutoRegister(monaco)
-        AtlasHCL.ConnectEditor(monaco, editor)
-    }
+  const handleChange = (option) => {
+    setSelectedOption(option);
+  };
 
-    const text = `
+  function handleEditorDidMount(editor, monaco) {
+    AtlasHCL.AutoRegister(monaco);
+    AtlasHCL.ConnectEditor(monaco, editor);
+  }
+
+  const text = `
 /*
 
     SQL RESOURCES
@@ -79,32 +78,31 @@ table "metrics" {
         }
     }
 }    
-    `
+    `;
 
-    return (
-        <div>
-            <div style={styles.container}>
-                <div style={styles.title}>AtlasHCL Schema</div>
-                <Select
-                    styles={styles.select}
-                    options={languages}
-                    value={selectedOption}
-                    onChange={handleChange}
-                    />
-            </div>
-            <Editor
-                height="90vh"
-                language={selectedOption.value}
-                defaultLanguage= {languages[0].value}
-                defaultValue={text}
-                onMount={handleEditorDidMount}
-                options={{
-                    wordBasedSuggestions: false
-                }}
-            />
-        </div>
+  return (
+    <div>
+      <div style={styles.container}>
+        <div style={styles.title}>AtlasHCL Schema</div>
+        <Select
+          styles={styles.select}
+          options={languages}
+          value={selectedOption}
+          onChange={handleChange}
+        />
+      </div>
+      <Editor
+        height="90vh"
+        language={selectedOption.value}
+        defaultLanguage={languages[0].value}
+        defaultValue={text}
+        onMount={handleEditorDidMount}
+        options={{
+          wordBasedSuggestions: false,
+        }}
+      />
+    </div>
+  );
+}
 
-    );
-  }
-  
-  export default HCLSchemaEditor;
+export default HCLSchemaEditor;

@@ -1,12 +1,12 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  devtool: 'cheap-module-source-map',
-  entry: './src/demo/index.tsx',
+  devtool: "cheap-module-source-map",
+  entry: "./src/demo/index.tsx",
   output: {
-    filename: 'index.js'
+    filename: "index.js",
   },
   optimization: {
     minimize: false,
@@ -15,7 +15,7 @@ module.exports = {
     open: true,
     hot: true,
     host: "localhost",
-    port: 9000
+    port: 9000,
   },
   module: {
     rules: [
@@ -23,8 +23,8 @@ module.exports = {
         test: /\.(m|j|t)s$/,
         exclude: /(node_modules|bower_components)/,
         use: {
-          loader: 'babel-loader'
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: /\.(sa|sc|c)ss$/,
@@ -37,22 +37,22 @@ module.exports = {
         test: /\.tsx?$/,
         exclude: /(node_modules|bower_components)/,
         use: {
-          loader: 'ts-loader',
+          loader: "ts-loader",
           options: {
-            transpileOnly: true
-          }
-        }
+            transpileOnly: true,
+          },
+        },
       },
-    ]
+    ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/index.css'
+      filename: "css/index.css",
     }),
     new HtmlWebpackPlugin(),
   ],
   resolve: {
-    extensions: ['.ts', '.js', '.json', '.tsx']
+    extensions: [".ts", ".js", ".json", ".tsx"],
   },
   ignoreWarnings: [
     {
