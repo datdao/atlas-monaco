@@ -7,17 +7,17 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-    # Necessary to push the generated badges to the repo
-    - name: Check out repository code
-      uses: actions/checkout@v2
-      with:
+      # Necessary to push the generated badges to the repo
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
           node-version: 17.8.0
-    # Necessary to generate the coverage report.
-    - name: Install Dependencies
-      run: npm install
-    - name: Tests
-      run: npm run test-ci
-    - name: Generating coverage badges
-      uses: jpb06/jest-badges-action@latest
-      with:
-        branches: master
+      # Necessary to generate the coverage report.
+      - name: Install Dependencies
+        run: npm install
+      - name: Tests
+        run: npm run test-ci
+      - name: Generating coverage badges
+        uses: jpb06/jest-badges-action@latest
+        with:
+          branches: master

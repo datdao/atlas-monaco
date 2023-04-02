@@ -1,158 +1,166 @@
-import { isOverlap, isPositionInsideRange } from "../../atlashcl/utils"
+import { isOverlap, isPositionInsideRange } from "../../atlashcl/utils";
 
-describe('utils', () => {
-    describe('isOverlap', () => {
-        test('default', () => {
-            const result = isOverlap({
-                startLineNumber:1,
-                endLineNumber: 10,
-                startColumn:1,
-                endColumn:9
-            } as any,{
-                startLineNumber:2,
-                endLineNumber: 10,
-                startColumn:1,
-                endColumn:9
-            } as any)
-    
-            expect(result).toEqual(true)
-        })
-    
-        test('equal', () => {
-            const result = isOverlap({
-                startLineNumber:2,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any,{
-                startLineNumber:2,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any)
-    
-            expect(result).toEqual(true)
-        })
-    
-        test('false', () => {
-            const result = isOverlap({
-                startLineNumber:3,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any,{
-                startLineNumber:2,
-                endLineNumber: 9,
-                startColumn:1,
-                endColumn:9
-            } as any)
-    
-            expect(result).toEqual(false)
-        })
-    })
+describe("utils", () => {
+  describe("isOverlap", () => {
+    test("default", () => {
+      const result = isOverlap(
+        {
+          startLineNumber: 1,
+          endLineNumber: 10,
+          startColumn: 1,
+          endColumn: 9,
+        } as any,
+        {
+          startLineNumber: 2,
+          endLineNumber: 10,
+          startColumn: 1,
+          endColumn: 9,
+        } as any
+      );
 
-    describe('isPositionInsideRange', () => {
-        test('default', () => {
-            const position = {
-                lineNumber: 1,
-                column: 1
-            }
+      expect(result).toEqual(true);
+    });
 
-            const range = {
-                startLineNumber: 0,
-                endLineNumber: 2,
-                startColumn:0,
-                endColumn: 0
-            }
+    test("equal", () => {
+      const result = isOverlap(
+        {
+          startLineNumber: 2,
+          endLineNumber: 9,
+          startColumn: 1,
+          endColumn: 9,
+        } as any,
+        {
+          startLineNumber: 2,
+          endLineNumber: 9,
+          startColumn: 1,
+          endColumn: 9,
+        } as any
+      );
 
-            const result = isPositionInsideRange(position, range)
-            expect(result).toEqual(true)
-        })
+      expect(result).toEqual(true);
+    });
 
-        test('cursor at startline but stand after startColumn', () => {
-            const position = {
-                lineNumber: 1,
-                column: 3
-            }
+    test("false", () => {
+      const result = isOverlap(
+        {
+          startLineNumber: 3,
+          endLineNumber: 9,
+          startColumn: 1,
+          endColumn: 9,
+        } as any,
+        {
+          startLineNumber: 2,
+          endLineNumber: 9,
+          startColumn: 1,
+          endColumn: 9,
+        } as any
+      );
 
-            const range = {
-                startLineNumber: 1,
-                endLineNumber: 2,
-                startColumn:1,
-                endColumn: 1
-            }
+      expect(result).toEqual(false);
+    });
+  });
 
-            const result = isPositionInsideRange(position, range)
-            expect(result).toEqual(true)
-        })
+  describe("isPositionInsideRange", () => {
+    test("default", () => {
+      const position = {
+        lineNumber: 1,
+        column: 1,
+      };
 
-        test('cursor at startline but stand before startColumn', () => {
-            const position = {
-                lineNumber: 1,
-                column: 0
-            }
+      const range = {
+        startLineNumber: 0,
+        endLineNumber: 2,
+        startColumn: 0,
+        endColumn: 0,
+      };
 
-            const range = {
-                startLineNumber: 1,
-                endLineNumber: 2,
-                startColumn:1,
-                endColumn: 1
-            }
+      const result = isPositionInsideRange(position, range);
+      expect(result).toEqual(true);
+    });
 
-            const result = isPositionInsideRange(position, range)
-            expect(result).toEqual(false)
-        })
+    test("cursor at startline but stand after startColumn", () => {
+      const position = {
+        lineNumber: 1,
+        column: 3,
+      };
 
-        test('cursor at endLine but stand before startColumn', () => {
-            const position = {
-                lineNumber: 2,
-                column: 0
-            }
+      const range = {
+        startLineNumber: 1,
+        endLineNumber: 2,
+        startColumn: 1,
+        endColumn: 1,
+      };
 
-            const range = {
-                startLineNumber: 1,
-                endLineNumber: 2,
-                startColumn:1,
-                endColumn: 1
-            }
+      const result = isPositionInsideRange(position, range);
+      expect(result).toEqual(true);
+    });
 
-            const result = isPositionInsideRange(position, range)
-            expect(result).toEqual(true)
-        })
+    test("cursor at startline but stand before startColumn", () => {
+      const position = {
+        lineNumber: 1,
+        column: 0,
+      };
 
-        test('cursor at endLine but stand after startColumn', () => {
-            const position = {
-                lineNumber: 2,
-                column: 3
-            }
+      const range = {
+        startLineNumber: 1,
+        endLineNumber: 2,
+        startColumn: 1,
+        endColumn: 1,
+      };
 
-            const range = {
-                startLineNumber: 1,
-                endLineNumber: 2,
-                startColumn:1,
-                endColumn: 1
-            }
+      const result = isPositionInsideRange(position, range);
+      expect(result).toEqual(false);
+    });
 
-            const result = isPositionInsideRange(position, range)
-            expect(result).toEqual(false)
-        })
+    test("cursor at endLine but stand before startColumn", () => {
+      const position = {
+        lineNumber: 2,
+        column: 0,
+      };
 
-        test('cursor out of range', () => {
-            const position = {
-                lineNumber: 5,
-                column: 3
-            }
+      const range = {
+        startLineNumber: 1,
+        endLineNumber: 2,
+        startColumn: 1,
+        endColumn: 1,
+      };
 
-            const range = {
-                startLineNumber: 1,
-                endLineNumber: 2,
-                startColumn:1,
-                endColumn: 1
-            }
+      const result = isPositionInsideRange(position, range);
+      expect(result).toEqual(true);
+    });
 
-            const result = isPositionInsideRange(position, range)
-            expect(result).toEqual(false)
-        })
-    })
-})
+    test("cursor at endLine but stand after startColumn", () => {
+      const position = {
+        lineNumber: 2,
+        column: 3,
+      };
 
+      const range = {
+        startLineNumber: 1,
+        endLineNumber: 2,
+        startColumn: 1,
+        endColumn: 1,
+      };
+
+      const result = isPositionInsideRange(position, range);
+      expect(result).toEqual(false);
+    });
+
+    test("cursor out of range", () => {
+      const position = {
+        lineNumber: 5,
+        column: 3,
+      };
+
+      const range = {
+        startLineNumber: 1,
+        endLineNumber: 2,
+        startColumn: 1,
+        endColumn: 1,
+      };
+
+      const result = isPositionInsideRange(position, range);
+      expect(result).toEqual(false);
+    });
+  });
+});

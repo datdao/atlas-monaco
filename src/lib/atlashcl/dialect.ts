@@ -1,5 +1,5 @@
 export enum Dialect {
-    sqlite = "sqlite",
-    mysql = "mysql",
-    postgresql = "postgresql"
+  sqlite = "sqlite",
+  mysql = "mysql",
+  postgresql = "postgresql",
 }

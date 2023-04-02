@@ -1,19 +1,19 @@
 {
-    "compilerOptions": {
-      "jsx": "react",
-      "noImplicitAny": true,
-      "outDir": "build/types",
-      "module": "esnext",
-      "target": "es5",
-      "allowJs": true,
-      "checkJs": false,
-      "sourceMap": true,
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "suppressImplicitAnyIndexErrors": true,
-      "lib": ["es2018", "dom"],
-      "moduleResolution": "node",
-    },
-    "include": ["src/lib", "es2021"],
-    "exclude": ["src/lib/**/tests"],
+  "compilerOptions": {
+    "jsx": "react",
+    "noImplicitAny": true,
+    "outDir": "build/types",
+    "module": "esnext",
+    "target": "es5",
+    "allowJs": true,
+    "checkJs": false,
+    "sourceMap": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "lib": ["es2018", "dom"],
+    "moduleResolution": "node"
+  },
+  "include": ["src/lib", "es2021"],
+  "exclude": ["src/lib/**/tests"]
 }
